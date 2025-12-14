@@ -1,0 +1,588 @@
+openapi: 3.0.0
+info:
+  title: Commitly API
+  version: 1.0.0
+  description: API for tracking GitHub commit activity and comparing with rivals
+
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+
+paths:
+  /health:
+    get:
+      summary: Health check
+      operationId: healthCheck
+      tags:
+        - System
+      responses:
+        '200':
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+  /api/auth/callback:
+    post:
+      summary: GitHub OAuth callback
+      description: Receive user info from NextAuth.js and create/update user in database
+      operationId: authCallback
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthCallbackRequest'
+      responses:
+        '200':
+          description: User created/updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/auth/logout:
+    post:
+      summary: Logout
+      operationId: logout
+      tags:
+        - Auth
+      responses:
+        '200':
+          description: Logged out successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+
+  /api/me:
+    get:
+      summary: Get current user
+      operationId: getMe
+      tags:
+        - User
+      security:
+        - GitHubUserID: []
+      responses:
+        '200':
+          description: Current user info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/rivals:
+    get:
+      summary: Get rivals list
+      operationId: getRivals
+      tags:
+        - Rivals
+      security:
+        - GitHubUserID: []
+      responses:
+        '200':
+          description: Rivals list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RivalsResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Add a rival
+      operationId: addRival
+      tags:
+        - Rivals
+      security:
+        - GitHubUserID: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddRivalRequest'
+      responses:
+        '201':
+          description: Rival added successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rival'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/rivals/{id}:
+    delete:
+      summary: Remove a rival
+      operationId: removeRival
+      tags:
+        - Rivals
+      security:
+        - GitHubUserID: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Rival removed successfully
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/dashboard/weekly:
+    get:
+      summary: Get weekly dashboard data
+      operationId: getWeeklyDashboard
+      tags:
+        - Dashboard
+      security:
+        - GitHubUserID: []
+      responses:
+        '200':
+          description: Weekly dashboard data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardData'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/dashboard/monthly:
+    get:
+      summary: Get monthly dashboard data
+      operationId: getMonthlyDashboard
+      tags:
+        - Dashboard
+      security:
+        - GitHubUserID: []
+      responses:
+        '200':
+          description: Monthly dashboard data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardData'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/notifications:
+    get:
+      summary: Get notification settings
+      operationId: getNotificationSettings
+      tags:
+        - Notifications
+      security:
+        - GitHubUserID: []
+      responses:
+        '200':
+          description: Notification settings list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationSettingsResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Create notification setting
+      operationId: createNotificationSetting
+      tags:
+        - Notifications
+      security:
+        - GitHubUserID: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateNotificationSettingRequest'
+      responses:
+        '201':
+          description: Notification setting created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationSetting'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/notifications/{id}:
+    put:
+      summary: Update notification setting
+      operationId: updateNotificationSetting
+      tags:
+        - Notifications
+      security:
+        - GitHubUserID: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateNotificationSettingRequest'
+      responses:
+        '200':
+          description: Notification setting updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationSetting'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Delete notification setting
+      operationId: deleteNotificationSetting
+      tags:
+        - Notifications
+      security:
+        - GitHubUserID: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Notification setting deleted
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  securitySchemes:
+    GitHubUserID:
+      type: apiKey
+      in: header
+      name: X-GitHub-User-ID
+      description: GitHub User ID from NextAuth.js session
+
+  schemas:
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: ok
+      required:
+        - status
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+
+    MessageResponse:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+        - message
+
+    AuthCallbackRequest:
+      type: object
+      properties:
+        github_user_id:
+          type: integer
+          format: int64
+        github_username:
+          type: string
+        avatar_url:
+          type: string
+      required:
+        - github_user_id
+        - github_username
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        github_user_id:
+          type: integer
+          format: int64
+        github_username:
+          type: string
+        avatar_url:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+      required:
+        - id
+        - github_user_id
+        - github_username
+
+    Rival:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        github_user_id:
+          type: integer
+          format: int64
+        github_username:
+          type: string
+        avatar_url:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+      required:
+        - id
+        - github_user_id
+        - github_username
+
+    RivalsResponse:
+      type: object
+      properties:
+        rivals:
+          type: array
+          items:
+            $ref: '#/components/schemas/Rival'
+        count:
+          type: integer
+        max_rivals:
+          type: integer
+      required:
+        - rivals
+        - count
+        - max_rivals
+
+    AddRivalRequest:
+      type: object
+      properties:
+        username:
+          type: string
+      required:
+        - username
+
+    DailyCommitSummary:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        commit_count:
+          type: integer
+      required:
+        - date
+        - commit_count
+
+    RepositoryCommitSummary:
+      type: object
+      properties:
+        repository:
+          type: string
+        commit_count:
+          type: integer
+      required:
+        - repository
+        - commit_count
+
+    UserCommitStats:
+      type: object
+      properties:
+        github_user_id:
+          type: integer
+          format: int64
+        github_username:
+          type: string
+        avatar_url:
+          type: string
+        total_commits:
+          type: integer
+        daily_stats:
+          type: array
+          items:
+            $ref: '#/components/schemas/DailyCommitSummary'
+        repo_stats:
+          type: array
+          items:
+            $ref: '#/components/schemas/RepositoryCommitSummary'
+      required:
+        - github_user_id
+        - github_username
+        - total_commits
+        - daily_stats
+        - repo_stats
+
+    DashboardData:
+      type: object
+      properties:
+        period:
+          type: string
+          enum: [weekly, monthly]
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        my_stats:
+          $ref: '#/components/schemas/UserCommitStats'
+        rivals:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserCommitStats'
+      required:
+        - period
+        - start_date
+        - end_date
+        - my_stats
+        - rivals
+
+    NotificationSetting:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        channel_type:
+          type: string
+          enum: [line, slack, discord]
+        webhook_url:
+          type: string
+        line_user_id:
+          type: string
+        is_enabled:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+        - id
+        - channel_type
+        - is_enabled
+
+    NotificationSettingsResponse:
+      type: object
+      properties:
+        settings:
+          type: array
+          items:
+            $ref: '#/components/schemas/NotificationSetting'
+      required:
+        - settings
+
+    CreateNotificationSettingRequest:
+      type: object
+      properties:
+        channel_type:
+          type: string
+          enum: [line, slack, discord]
+        webhook_url:
+          type: string
+        line_user_id:
+          type: string
+      required:
+        - channel_type
+
+    UpdateNotificationSettingRequest:
+      type: object
+      properties:
+        is_enabled:
+          type: boolean
+        webhook_url:
+          type: string
+        line_user_id:
+          type: string

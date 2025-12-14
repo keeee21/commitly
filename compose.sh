@@ -1,0 +1,1 @@
+docker-compose -p commitly -f infra/docker-compose.yaml ${@}

@@ -1,0 +1,9 @@
+package: api
+output: internal/api/openapi.go
+generate:
+  models: true
+  chi-server: false
+  echo-server: false
+  strict-server: false
+output-options:
+  skip-prune: true
