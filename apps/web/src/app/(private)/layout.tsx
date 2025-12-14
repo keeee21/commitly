@@ -1,15 +1,23 @@
+import { redirect } from "next/navigation";
 import { AppSidebar } from "@/components/app-sidebar";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { auth } from "@/config/auth.config";
 
-export default function PrivateLayout({
+export default async function PrivateLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await auth();
+
+  if (!session) {
+    redirect("/");
+  }
+
   return (
     <SidebarProvider>
       <AppSidebar />

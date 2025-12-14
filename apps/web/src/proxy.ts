@@ -4,7 +4,7 @@ import { ROUTES } from "./constants/routes";
 
 // 認証が不要なパス（公開パス）
 const PUBLIC_PATHS = [
-  "/login",
+  "/",
   "/api/auth", // NextAuth.jsの認証エンドポイント
   "/favicon.ico",
   "/_next", // Next.jsの内部リソース
@@ -40,6 +40,10 @@ const isPublicPath = (pathname: string): boolean => {
 
   // 公開パスに含まれるかどうかをチェック
   return PUBLIC_PATHS.some((path) => {
+    // ルートパスは完全一致
+    if (path === "/") {
+      return pathname === "/";
+    }
     if (path.endsWith("*")) {
       // ワイルドカード対応（例: "/api/*"）
       return pathname.startsWith(path.slice(0, -1));
@@ -60,9 +64,9 @@ export default async function proxy(request: NextRequest) {
     // セッションを取得
     const session = await auth();
 
-    // 認証が必要だがセッションがない場合、ログインページにリダイレクト
+    // 認証が必要だがセッションがない場合、ランディングページにリダイレクト
     if (!session) {
-      const url = new URL(ROUTES.LOGIN, request.url);
+      const url = new URL(ROUTES.HOME, request.url);
       // リダイレクト後に元のページに戻れるよう、callbackUrlを設定
       url.searchParams.set("callbackUrl", pathname);
       return NextResponse.redirect(url);
@@ -71,8 +75,8 @@ export default async function proxy(request: NextRequest) {
     // セッションがある場合は通常のレスポンスを返す
     return NextResponse.next();
   } catch (_error) {
-    // エラーが発生した場合もログインページにリダイレクト
-    const url = new URL(ROUTES.LOGIN, request.url);
+    // エラーが発生した場合もランディングページにリダイレクト
+    const url = new URL(ROUTES.HOME, request.url);
     url.searchParams.set("callbackUrl", pathname);
     url.searchParams.set("error", "auth_error");
     return NextResponse.redirect(url);

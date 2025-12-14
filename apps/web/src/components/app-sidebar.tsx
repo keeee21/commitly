@@ -4,6 +4,7 @@ import {
   Bell,
   ChevronRight,
   LayoutDashboard,
+  LogOut,
   Settings,
   Users,
 } from "lucide-react";
@@ -29,6 +30,7 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import { ROUTES } from "@/constants/routes";
+import { signOutAction } from "@/lib/auth";
 
 const menuItems = [
   {
@@ -103,7 +105,18 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter />
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <form action={signOutAction}>
+              <SidebarMenuButton type="submit" className="w-full">
+                <LogOut />
+                <span>Logout</span>
+              </SidebarMenuButton>
+            </form>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
     </Sidebar>
   );
 }
