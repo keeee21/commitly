@@ -144,37 +144,21 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
-  "/api/notifications": {
+  "/api/notifications/slack": {
     parameters: {
       query?: never;
       header?: never;
       path?: never;
       cookie?: never;
     };
-    /** Get notification settings */
-    get: operations["getNotificationSettings"];
-    put?: never;
-    /** Create notification setting */
-    post: operations["createNotificationSetting"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/api/notifications/{id}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    /** Update notification setting */
-    put: operations["updateNotificationSetting"];
-    post?: never;
-    /** Delete notification setting */
-    delete: operations["deleteNotificationSetting"];
+    /** Get Slack notification setting */
+    get: operations["getSlackNotificationSetting"];
+    /** Update Slack notification setting */
+    put: operations["updateSlackNotificationSetting"];
+    /** Create Slack notification setting */
+    post: operations["createSlackNotificationSetting"];
+    /** Delete Slack notification setting */
+    delete: operations["deleteSlackNotificationSetting"];
     options?: never;
     head?: never;
     patch?: never;
@@ -256,32 +240,23 @@ export interface components {
       my_stats: components["schemas"]["UserCommitStats"];
       rivals: components["schemas"]["UserCommitStats"][];
     };
-    NotificationSetting: {
+    SlackNotificationSetting: {
       /** Format: int64 */
       id: number;
-      /** @enum {string} */
-      channel_type: "line" | "slack" | "discord";
-      webhook_url?: string;
-      line_user_id?: string;
+      /** @description Slack Webhook URL (masked for security) */
+      webhook_url: string;
       is_enabled: boolean;
       /** Format: date-time */
       created_at?: string;
       /** Format: date-time */
       updated_at?: string;
     };
-    NotificationSettingsResponse: {
-      settings: components["schemas"]["NotificationSetting"][];
+    CreateSlackNotificationRequest: {
+      /** @description Slack Webhook URL (must start with https://hooks.slack.com/services/) */
+      webhook_url: string;
     };
-    CreateNotificationSettingRequest: {
-      /** @enum {string} */
-      channel_type: "line" | "slack" | "discord";
-      webhook_url?: string;
-      line_user_id?: string;
-    };
-    UpdateNotificationSettingRequest: {
-      is_enabled?: boolean;
-      webhook_url?: string;
-      line_user_id?: string;
+    UpdateSlackNotificationRequest: {
+      is_enabled: boolean;
     };
   };
   responses: never;
@@ -561,7 +536,7 @@ export interface operations {
       };
     };
   };
-  getNotificationSettings: {
+  getSlackNotificationSetting: {
     parameters: {
       query?: never;
       header?: never;
@@ -570,13 +545,13 @@ export interface operations {
     };
     requestBody?: never;
     responses: {
-      /** @description Notification settings list */
+      /** @description Slack notification setting */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          "application/json": components["schemas"]["NotificationSettingsResponse"];
+          "application/json": components["schemas"]["SlackNotificationSetting"];
         };
       };
       /** @description Unauthorized */
@@ -588,9 +563,18 @@ export interface operations {
           "application/json": components["schemas"]["Error"];
         };
       };
+      /** @description Setting not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Error"];
+        };
+      };
     };
   };
-  createNotificationSetting: {
+  updateSlackNotificationSetting: {
     parameters: {
       query?: never;
       header?: never;
@@ -599,17 +583,68 @@ export interface operations {
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["CreateNotificationSettingRequest"];
+        "application/json": components["schemas"]["UpdateSlackNotificationRequest"];
       };
     };
     responses: {
-      /** @description Notification setting created */
+      /** @description Slack notification setting updated */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SlackNotificationSetting"];
+        };
+      };
+      /** @description Bad request */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Error"];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Error"];
+        };
+      };
+      /** @description Setting not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Error"];
+        };
+      };
+    };
+  };
+  createSlackNotificationSetting: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreateSlackNotificationRequest"];
+      };
+    };
+    responses: {
+      /** @description Slack notification setting created */
       201: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          "application/json": components["schemas"]["NotificationSetting"];
+          "application/json": components["schemas"]["SlackNotificationSetting"];
         };
       };
       /** @description Bad request */
@@ -632,70 +667,24 @@ export interface operations {
       };
     };
   };
-  updateNotificationSetting: {
+  deleteSlackNotificationSetting: {
     parameters: {
       query?: never;
       header?: never;
-      path: {
-        id: number;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["UpdateNotificationSettingRequest"];
-      };
-    };
-    responses: {
-      /** @description Notification setting updated */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["NotificationSetting"];
-        };
-      };
-      /** @description Bad request */
-      400: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-      /** @description Unauthorized */
-      401: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["Error"];
-        };
-      };
-    };
-  };
-  deleteNotificationSetting: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: number;
-      };
+      path?: never;
       cookie?: never;
     };
     requestBody?: never;
     responses: {
-      /** @description Notification setting deleted */
+      /** @description Slack notification setting deleted */
       204: {
         headers: {
           [name: string]: unknown;
         };
         content?: never;
       };
-      /** @description Bad request */
-      400: {
+      /** @description Unauthorized */
+      401: {
         headers: {
           [name: string]: unknown;
         };
@@ -703,8 +692,8 @@ export interface operations {
           "application/json": components["schemas"]["Error"];
         };
       };
-      /** @description Unauthorized */
-      401: {
+      /** @description Setting not found */
+      404: {
         headers: {
           [name: string]: unknown;
         };

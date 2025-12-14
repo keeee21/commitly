@@ -23,6 +23,9 @@ func AutoMigrate(db *gorm.DB) error {
 		&models.User{},
 		&models.Rival{},
 		&models.CommitStats{},
-		&models.NotificationSetting{},
+		&models.SlackNotificationSetting{},
+		&models.LineNotificationSetting{},
+		&models.DiscordNotificationSetting{},
+		&models.NotificationLog{},
 	)
 }

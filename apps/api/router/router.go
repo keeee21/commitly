@@ -16,7 +16,7 @@ func SetupRoutes(e *echo.Echo, db *gorm.DB) {
 	userRepo := repository.NewUserRepository(db)
 	rivalRepo := repository.NewRivalRepository(db)
 	commitStatsRepo := repository.NewCommitStatsRepository(db)
-	notificationRepo := repository.NewNotificationSettingRepository(db)
+	slackNotificationRepo := repository.NewSlackNotificationSettingRepository(db)
 
 	// Gateways
 	githubGateway := gateway.NewGithubGateway("")
@@ -25,14 +25,14 @@ func SetupRoutes(e *echo.Echo, db *gorm.DB) {
 	userUsecase := usecase.NewUserUsecase(userRepo, githubGateway)
 	rivalUsecase := usecase.NewRivalUsecase(rivalRepo, githubGateway)
 	dashboardUsecase := usecase.NewDashboardUsecase(commitStatsRepo)
-	notificationUsecase := usecase.NewNotificationUsecase(notificationRepo)
+	slackNotificationUsecase := usecase.NewSlackNotificationUsecase(slackNotificationRepo)
 
 	// Controllers
 	authCtrl := controller.NewAuthController(userUsecase)
 	userCtrl := controller.NewUserController(userUsecase)
 	rivalCtrl := controller.NewRivalController(rivalUsecase)
 	dashboardCtrl := controller.NewDashboardController(dashboardUsecase, rivalUsecase)
-	notificationCtrl := controller.NewNotificationController(notificationUsecase)
+	slackNotificationCtrl := controller.NewSlackNotificationController(slackNotificationUsecase)
 
 	// Health check
 	e.GET("/health", func(c echo.Context) error {
@@ -65,10 +65,10 @@ func SetupRoutes(e *echo.Echo, db *gorm.DB) {
 	dashboard.GET("/weekly", dashboardCtrl.GetWeeklyDashboard)
 	dashboard.GET("/monthly", dashboardCtrl.GetMonthlyDashboard)
 
-	// Notification routes
-	notifications := protected.Group("/notifications")
-	notifications.GET("", notificationCtrl.GetSettings)
-	notifications.POST("", notificationCtrl.CreateSetting)
-	notifications.PUT("/:id", notificationCtrl.UpdateSetting)
-	notifications.DELETE("/:id", notificationCtrl.DeleteSetting)
+	// Slack notification routes
+	slack := protected.Group("/notifications/slack")
+	slack.GET("", slackNotificationCtrl.GetSetting)
+	slack.POST("", slackNotificationCtrl.Create)
+	slack.PUT("", slackNotificationCtrl.UpdateEnabled)
+	slack.DELETE("", slackNotificationCtrl.Delete)
 }

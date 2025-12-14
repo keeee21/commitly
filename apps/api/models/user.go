@@ -13,6 +13,8 @@ type User struct {
 	UpdatedAt      time.Time `gorm:"autoUpdateTime"`
 
 	// Relations
-	Rivals               []Rival               `gorm:"foreignKey:UserID"`
-	NotificationSettings []NotificationSetting `gorm:"foreignKey:UserID"`
+	Rivals                      []Rival                      `gorm:"foreignKey:UserID"`
+	SlackNotificationSetting    *SlackNotificationSetting    `gorm:"foreignKey:UserID"`
+	LineNotificationSetting     *LineNotificationSetting     `gorm:"foreignKey:UserID"`
+	DiscordNotificationSetting  *DiscordNotificationSetting  `gorm:"foreignKey:UserID"`
 }

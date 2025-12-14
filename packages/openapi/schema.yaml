@@ -215,30 +215,36 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
-  /api/notifications:
+  /api/notifications/slack:
     get:
-      summary: Get notification settings
-      operationId: getNotificationSettings
+      summary: Get Slack notification setting
+      operationId: getSlackNotificationSetting
       tags:
         - Notifications
       security:
         - GitHubUserID: []
       responses:
         '200':
-          description: Notification settings list
+          description: Slack notification setting
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NotificationSettingsResponse'
+                $ref: '#/components/schemas/SlackNotificationSetting'
         '401':
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Setting not found
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
     post:
-      summary: Create notification setting
-      operationId: createNotificationSetting
+      summary: Create Slack notification setting
+      operationId: createSlackNotificationSetting
       tags:
         - Notifications
       security:
@@ -248,14 +254,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateNotificationSettingRequest'
+              $ref: '#/components/schemas/CreateSlackNotificationRequest'
       responses:
         '201':
-          description: Notification setting created
+          description: Slack notification setting created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NotificationSetting'
+                $ref: '#/components/schemas/SlackNotificationSetting'
         '400':
           description: Bad request
           content:
@@ -268,35 +274,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-
-  /api/notifications/{id}:
     put:
-      summary: Update notification setting
-      operationId: updateNotificationSetting
+      summary: Update Slack notification setting
+      operationId: updateSlackNotificationSetting
       tags:
         - Notifications
       security:
         - GitHubUserID: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateNotificationSettingRequest'
+              $ref: '#/components/schemas/UpdateSlackNotificationRequest'
       responses:
         '200':
-          description: Notification setting updated
+          description: Slack notification setting updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NotificationSetting'
+                $ref: '#/components/schemas/SlackNotificationSetting'
         '400':
           description: Bad request
           content:
@@ -305,35 +302,34 @@ paths:
                 $ref: '#/components/schemas/Error'
         '401':
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Setting not found
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
     delete:
-      summary: Delete notification setting
-      operationId: deleteNotificationSetting
+      summary: Delete Slack notification setting
+      operationId: deleteSlackNotificationSetting
       tags:
         - Notifications
       security:
         - GitHubUserID: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
       responses:
         '204':
-          description: Notification setting deleted
-        '400':
-          description: Bad request
+          description: Slack notification setting deleted
+        '401':
+          description: Unauthorized
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '401':
-          description: Unauthorized
+        '404':
+          description: Setting not found
           content:
             application/json:
               schema:
@@ -528,19 +524,15 @@ components:
         - my_stats
         - rivals
 
-    NotificationSetting:
+    SlackNotificationSetting:
       type: object
       properties:
         id:
           type: integer
           format: int64
-        channel_type:
-          type: string
-          enum: [line, slack, discord]
         webhook_url:
           type: string
-        line_user_id:
-          type: string
+          description: Slack Webhook URL (masked for security)
         is_enabled:
           type: boolean
         created_at:
@@ -551,38 +543,22 @@ components:
           format: date-time
       required:
         - id
-        - channel_type
+        - webhook_url
         - is_enabled
 
-    NotificationSettingsResponse:
+    CreateSlackNotificationRequest:
       type: object
       properties:
-        settings:
-          type: array
-          items:
-            $ref: '#/components/schemas/NotificationSetting'
-      required:
-        - settings
-
-    CreateNotificationSettingRequest:
-      type: object
-      properties:
-        channel_type:
-          type: string
-          enum: [line, slack, discord]
         webhook_url:
           type: string
-        line_user_id:
-          type: string
+          description: Slack Webhook URL (must start with https://hooks.slack.com/services/)
       required:
-        - channel_type
+        - webhook_url
 
-    UpdateNotificationSettingRequest:
+    UpdateSlackNotificationRequest:
       type: object
       properties:
         is_enabled:
           type: boolean
-        webhook_url:
-          type: string
-        line_user_id:
-          type: string
+      required:
+        - is_enabled

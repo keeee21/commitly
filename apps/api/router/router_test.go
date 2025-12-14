@@ -56,16 +56,15 @@ func TestRoutesRegistered(t *testing.T) {
 
 	// 期待されるルートのリスト
 	expectedRoutes := map[string][]string{
-		"/health":              {http.MethodGet},
-		"/api/auth/callback":   {http.MethodPost},
-		"/api/auth/logout":     {http.MethodPost},
-		"/api/me":              {http.MethodGet},
-		"/api/rivals":          {http.MethodGet, http.MethodPost},
-		"/api/rivals/:id":      {http.MethodDelete},
-		"/api/dashboard/weekly": {http.MethodGet},
-		"/api/dashboard/monthly": {http.MethodGet},
-		"/api/notifications":    {http.MethodGet, http.MethodPost},
-		"/api/notifications/:id": {http.MethodPut, http.MethodDelete},
+		"/health":                    {http.MethodGet},
+		"/api/auth/callback":         {http.MethodPost},
+		"/api/auth/logout":           {http.MethodPost},
+		"/api/me":                    {http.MethodGet},
+		"/api/rivals":                {http.MethodGet, http.MethodPost},
+		"/api/rivals/:id":            {http.MethodDelete},
+		"/api/dashboard/weekly":      {http.MethodGet},
+		"/api/dashboard/monthly":     {http.MethodGet},
+		"/api/notifications/slack":   {http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete},
 	}
 
 	// ルートが登録されていることを確認
@@ -149,13 +148,13 @@ func TestDashboardEndpointWithoutAuth(t *testing.T) {
 	assert.Equal(t, http.StatusUnauthorized, rec.Code)
 }
 
-func TestNotificationsEndpointWithoutAuth(t *testing.T) {
+func TestSlackNotificationsEndpointWithoutAuth(t *testing.T) {
 	e := echo.New()
 	db, _ := setupTestDB(t)
 
 	SetupRoutes(e, db)
 
-	req := httptest.NewRequest(http.MethodGet, "/api/notifications", nil)
+	req := httptest.NewRequest(http.MethodGet, "/api/notifications/slack", nil)
 	rec := httptest.NewRecorder()
 
 	e.ServeHTTP(rec, req)

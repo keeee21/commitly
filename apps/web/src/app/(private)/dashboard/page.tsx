@@ -1,5 +1,11 @@
 import { DashboardContainer } from "./container";
 
-export default function DashboardPage() {
-  return <DashboardContainer />;
+type PageProps = {
+  searchParams: Promise<{
+    period?: string;
+  }>;
+};
+
+export default function DashboardPage({ searchParams }: PageProps) {
+  return <DashboardContainer searchParams={searchParams} />;
 }

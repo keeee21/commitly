@@ -1,9 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import type { Session } from "next-auth";
-import { useEffect, useState } from "react";
-import { client } from "@/lib/api/client";
+import Link from "next/link";
 import type { components } from "@/lib/api/schema";
 
 function formatMonth(dateStr: string): string {
@@ -11,61 +9,26 @@ function formatMonth(dateStr: string): string {
   return `${date.getFullYear()}年${date.getMonth() + 1}月`;
 }
 
-type DashboardPresenterProps = {
-  session: Session;
-};
-
 type DashboardData = components["schemas"]["DashboardData"];
 
-export function DashboardPresenter({ session }: DashboardPresenterProps) {
-  const [period, setPeriod] = useState<"weekly" | "monthly">("weekly");
-  const [dashboardData, setDashboardData] = useState<DashboardData | null>(
-    null,
-  );
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+type DashboardPresenterProps = {
+  period: "weekly" | "monthly";
+  dashboardData: DashboardData | null;
+  initialError: string | null;
+};
 
-  useEffect(() => {
-    const fetchDashboard = async () => {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const endpoint =
-          period === "weekly"
-            ? "/api/dashboard/weekly"
-            : "/api/dashboard/monthly";
-
-        const { data, error: apiError } = await client.GET(endpoint, {
-          headers: {
-            "X-GitHub-User-ID": String(session.user.githubUserId),
-          },
-        });
-
-        if (apiError) {
-          setError(apiError.error);
-          return;
-        }
-
-        setDashboardData(data);
-      } catch {
-        setError("データの取得に失敗しました");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchDashboard();
-  }, [period, session.user.githubUserId]);
-
+export function DashboardPresenter({
+  period,
+  dashboardData,
+  initialError,
+}: DashboardPresenterProps) {
   return (
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Dashboard</h1>
         <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={() => setPeriod("weekly")}
+          <Link
+            href="/dashboard?period=weekly"
             className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
               period === "weekly"
                 ? "bg-zinc-900 text-white dark:bg-zinc-50 dark:text-zinc-900"
@@ -73,10 +36,9 @@ export function DashboardPresenter({ session }: DashboardPresenterProps) {
             }`}
           >
             Weekly
-          </button>
-          <button
-            type="button"
-            onClick={() => setPeriod("monthly")}
+          </Link>
+          <Link
+            href="/dashboard?period=monthly"
             className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
               period === "monthly"
                 ? "bg-zinc-900 text-white dark:bg-zinc-50 dark:text-zinc-900"
@@ -84,23 +46,17 @@ export function DashboardPresenter({ session }: DashboardPresenterProps) {
             }`}
           >
             Monthly
-          </button>
+          </Link>
         </div>
       </div>
 
-      {loading && (
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-zinc-900 dark:border-zinc-50" />
-        </div>
-      )}
-
-      {error && (
+      {initialError && (
         <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-md">
-          {error}
+          {initialError}
         </div>
       )}
 
-      {!loading && !error && dashboardData && (
+      {dashboardData && (
         <div className="space-y-6">
           <div className="text-sm text-zinc-500 dark:text-zinc-400">
             {period === "monthly"
@@ -134,12 +90,12 @@ export function DashboardPresenter({ session }: DashboardPresenterProps) {
               <p className="text-zinc-500 dark:text-zinc-400 mb-4">
                 ライバルがまだ登録されていません
               </p>
-              <a
+              <Link
                 href="/rivals"
                 className="inline-block px-4 py-2 bg-zinc-900 text-white dark:bg-zinc-50 dark:text-zinc-900 rounded-md text-sm font-medium hover:opacity-80 transition-opacity"
               >
                 ライバルを登録する
-              </a>
+              </Link>
             </div>
           )}
 
