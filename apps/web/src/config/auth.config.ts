@@ -12,6 +12,7 @@ interface GitHubProfile {
 }
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  trustHost: true,
   providers: [
     GitHub({
       clientId: envConfig.auth.github.clientId,

@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "make run"
+    "dev": "make run",
+    "build": "make build",
+    "start": "make start"
   },
   "keywords": [],
   "author": "",
