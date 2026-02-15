@@ -5,6 +5,48 @@ info:
   contact: {}
   version: "1.0"
 paths:
+  /api/activity/rhythm:
+    get:
+      security:
+        - GitHubUserID: []
+      description: 自分とライバルの直近7日間の曜日別コミットパターンを返す
+      tags:
+        - activity
+      summary: リズム可視化データを取得
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/dto.RhythmResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/dto.ErrorResponse"
+  /api/activity/stream:
+    get:
+      security:
+        - GitHubUserID: []
+      description: 自分とライバルの直近7日間のコミット活動をストリーム形式で返す
+      tags:
+        - activity
+      summary: アクティビティストリームを取得
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/dto.ActivityStreamResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/dto.ErrorResponse"
   /api/auth/callback:
     post:
       description: フロントエンド（NextAuth.js）からユーザー情報を受け取りDBに保存
@@ -310,6 +352,39 @@ components:
       name: X-GitHub-User-ID
       in: header
   schemas:
+    dto.ActivityItem:
+      type: object
+      required:
+        - avatar_url
+        - commit_count
+        - date
+        - github_username
+        - repository
+      properties:
+        avatar_url:
+          type: string
+          example: https://avatars.githubusercontent.com/u/1
+        commit_count:
+          type: integer
+          example: 3
+        date:
+          type: string
+          example: 2026-02-15
+        github_username:
+          type: string
+          example: tanaka
+        repository:
+          type: string
+          example: nextjs-portfolio
+    dto.ActivityStreamResponse:
+      type: object
+      required:
+        - activities
+      properties:
+        activities:
+          type: array
+          items:
+            $ref: "#/components/schemas/dto.ActivityItem"
     dto.AddRivalRequest:
       type: object
       required:
@@ -360,6 +435,19 @@ components:
         message:
           type: string
           example: 処理が完了しました
+    dto.RhythmResponse:
+      type: object
+      required:
+        - period
+        - users
+      properties:
+        period:
+          type: string
+          example: 2026-02-09/2026-02-15
+        users:
+          type: array
+          items:
+            $ref: "#/components/schemas/dto.UserRhythm"
     dto.RivalResponse:
       type: object
       required:
@@ -457,6 +545,49 @@ components:
         id:
           type: integer
           example: 1
+    dto.UserRhythm:
+      type: object
+      required:
+        - avatar_url
+        - github_username
+        - pattern_label
+        - weekly_rhythm
+      properties:
+        avatar_url:
+          type: string
+          example: https://avatars.githubusercontent.com/u/1
+        github_username:
+          type: string
+          example: tanaka
+        pattern_label:
+          type: string
+          example: 安定型
+        weekly_rhythm:
+          $ref: "#/components/schemas/dto.WeeklyRhythm"
+    dto.WeeklyRhythm:
+      type: object
+      properties:
+        fri:
+          type: boolean
+          example: true
+        mon:
+          type: boolean
+          example: true
+        sat:
+          type: boolean
+          example: true
+        sun:
+          type: boolean
+          example: true
+        thu:
+          type: boolean
+          example: true
+        tue:
+          type: boolean
+          example: true
+        wed:
+          type: boolean
+          example: false
     usecase.DailyCommitSummary:
       type: object
       required:

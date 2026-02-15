@@ -4,698 +4,839 @@
  */
 
 export interface paths {
-    "/api/auth/callback": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Github OAuth コールバック
-         * @description フロントエンド（NextAuth.js）からユーザー情報を受け取りDBに保存
-         */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            /** @description コールバックリクエスト */
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["dto.CallbackRequest"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["dto.UserResponse"];
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["dto.ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["dto.ErrorResponse"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+  "/api/activity/rhythm": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/auth/logout": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    /**
+     * リズム可視化データを取得
+     * @description 自分とライバルの直近7日間の曜日別コミットパターンを返す
+     */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["dto.RhythmResponse"];
+          };
         };
-        get?: never;
-        put?: never;
-        /**
-         * ログアウト
-         * @description セッションはフロントエンド（NextAuth.js）で管理されるため、バックエンドでは特に処理不要
-         */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["dto.MessageResponse"];
-                    };
-                };
-            };
+        /** @description Internal Server Error */
+        500: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["dto.ErrorResponse"];
+          };
         };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+      };
     };
-    "/api/dashboard/monthly": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * 月間ダッシュボードデータを取得
-         * @description 今月のコミット統計を自分とライバルで比較
-         */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["usecase.DashboardData"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["dto.ErrorResponse"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/activity/stream": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/dashboard/weekly": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    /**
+     * アクティビティストリームを取得
+     * @description 自分とライバルの直近7日間のコミット活動をストリーム形式で返す
+     */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["dto.ActivityStreamResponse"];
+          };
         };
-        /**
-         * 週間ダッシュボードデータを取得
-         * @description 直近7日間のコミット統計を自分とライバルで比較
-         */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["usecase.DashboardData"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["dto.ErrorResponse"];
-                    };
-                };
-            };
+        /** @description Internal Server Error */
+        500: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["dto.ErrorResponse"];
+          };
         };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+      };
     };
-    "/api/me": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * 現在のユーザー情報を取得
-         * @description 認証済みユーザーの情報を返す
-         */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["dto.UserResponse"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/auth/callback": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/notifications/slack": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    get?: never;
+    put?: never;
+    /**
+     * Github OAuth コールバック
+     * @description フロントエンド（NextAuth.js）からユーザー情報を受け取りDBに保存
+     */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      /** @description コールバックリクエスト */
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["dto.CallbackRequest"];
         };
-        /**
-         * Slack通知設定を取得
-         * @description 現在のSlack通知設定を返す（Webhook URLはマスク済み）
-         */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["dto.SlackNotificationSettingResponse"];
-                    };
-                };
-                /** @description Not Found */
-                404: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["dto.ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["dto.ErrorResponse"];
-                    };
-                };
-            };
+      };
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["dto.UserResponse"];
+          };
         };
-        /**
-         * Slack通知の有効/無効を更新
-         * @description Slack通知設定の有効/無効を切り替える
-         */
-        put: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            /** @description 有効/無効更新リクエスト */
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["dto.UpdateEnabledRequest"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["dto.UpdateEnabledResponse"];
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["dto.ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["dto.ErrorResponse"];
-                    };
-                };
-            };
+        /** @description Bad Request */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["dto.ErrorResponse"];
+          };
         };
-        /**
-         * Slack通知設定を作成
-         * @description Slack Webhook URLを登録して通知設定を作成する
-         */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            /** @description Slack通知設定作成リクエスト */
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["dto.CreateSlackNotificationRequest"];
-                };
-            };
-            responses: {
-                /** @description Created */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["dto.SlackNotificationSettingResponse"];
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["dto.ErrorResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["dto.ErrorResponse"];
-                    };
-                };
-            };
+        /** @description Internal Server Error */
+        500: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["dto.ErrorResponse"];
+          };
         };
-        /**
-         * Slack通知設定を削除
-         * @description Slack通知設定を削除する
-         */
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description No Content */
-                204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "*/*": components["schemas"]["dto.ErrorResponse"];
-                    };
-                };
-            };
-        };
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+      };
     };
-    "/api/rivals": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * ライバル一覧を取得
-         * @description 登録済みのライバル一覧を返す
-         */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["dto.RivalsListResponse"];
-                    };
-                };
-                /** @description Internal Server Error */
-                500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["dto.ErrorResponse"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        /**
-         * ライバルを追加
-         * @description GitHubユーザー名を指定してライバルを登録する
-         */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            /** @description ライバル追加リクエスト */
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["dto.AddRivalRequest"];
-                };
-            };
-            responses: {
-                /** @description Created */
-                201: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["dto.RivalResponse"];
-                    };
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["dto.ErrorResponse"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/auth/logout": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/rivals/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    get?: never;
+    put?: never;
+    /**
+     * ログアウト
+     * @description セッションはフロントエンド（NextAuth.js）で管理されるため、バックエンドでは特に処理不要
+     */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["dto.MessageResponse"];
+          };
         };
-        get?: never;
-        put?: never;
-        post?: never;
-        /**
-         * ライバルを削除
-         * @description 指定IDのライバルを削除する
-         */
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description ライバルID */
-                    id: number;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description No Content */
-                204: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-                /** @description Bad Request */
-                400: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "*/*": components["schemas"]["dto.ErrorResponse"];
-                    };
-                };
-            };
-        };
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+      };
     };
-    "/health": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * ヘルスチェック
-         * @description サーバーの稼働状態を確認する
-         */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["dto.HealthResponse"];
-                    };
-                };
-            };
-        };
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/dashboard/monthly": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
+    /**
+     * 月間ダッシュボードデータを取得
+     * @description 今月のコミット統計を自分とライバルで比較
+     */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["usecase.DashboardData"];
+          };
+        };
+        /** @description Internal Server Error */
+        500: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["dto.ErrorResponse"];
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/dashboard/weekly": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * 週間ダッシュボードデータを取得
+     * @description 直近7日間のコミット統計を自分とライバルで比較
+     */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["usecase.DashboardData"];
+          };
+        };
+        /** @description Internal Server Error */
+        500: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["dto.ErrorResponse"];
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/me": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * 現在のユーザー情報を取得
+     * @description 認証済みユーザーの情報を返す
+     */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["dto.UserResponse"];
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/notifications/slack": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Slack通知設定を取得
+     * @description 現在のSlack通知設定を返す（Webhook URLはマスク済み）
+     */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["dto.SlackNotificationSettingResponse"];
+          };
+        };
+        /** @description Not Found */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["dto.ErrorResponse"];
+          };
+        };
+        /** @description Internal Server Error */
+        500: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["dto.ErrorResponse"];
+          };
+        };
+      };
+    };
+    /**
+     * Slack通知の有効/無効を更新
+     * @description Slack通知設定の有効/無効を切り替える
+     */
+    put: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      /** @description 有効/無効更新リクエスト */
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["dto.UpdateEnabledRequest"];
+        };
+      };
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["dto.UpdateEnabledResponse"];
+          };
+        };
+        /** @description Bad Request */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["dto.ErrorResponse"];
+          };
+        };
+        /** @description Internal Server Error */
+        500: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["dto.ErrorResponse"];
+          };
+        };
+      };
+    };
+    /**
+     * Slack通知設定を作成
+     * @description Slack Webhook URLを登録して通知設定を作成する
+     */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      /** @description Slack通知設定作成リクエスト */
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["dto.CreateSlackNotificationRequest"];
+        };
+      };
+      responses: {
+        /** @description Created */
+        201: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["dto.SlackNotificationSettingResponse"];
+          };
+        };
+        /** @description Bad Request */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["dto.ErrorResponse"];
+          };
+        };
+        /** @description Internal Server Error */
+        500: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["dto.ErrorResponse"];
+          };
+        };
+      };
+    };
+    /**
+     * Slack通知設定を削除
+     * @description Slack通知設定を削除する
+     */
+    delete: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description No Content */
+        204: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Internal Server Error */
+        500: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "*/*": components["schemas"]["dto.ErrorResponse"];
+          };
+        };
+      };
+    };
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/rivals": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * ライバル一覧を取得
+     * @description 登録済みのライバル一覧を返す
+     */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["dto.RivalsListResponse"];
+          };
+        };
+        /** @description Internal Server Error */
+        500: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["dto.ErrorResponse"];
+          };
+        };
+      };
+    };
+    put?: never;
+    /**
+     * ライバルを追加
+     * @description GitHubユーザー名を指定してライバルを登録する
+     */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      /** @description ライバル追加リクエスト */
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["dto.AddRivalRequest"];
+        };
+      };
+      responses: {
+        /** @description Created */
+        201: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["dto.RivalResponse"];
+          };
+        };
+        /** @description Bad Request */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["dto.ErrorResponse"];
+          };
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/rivals/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /**
+     * ライバルを削除
+     * @description 指定IDのライバルを削除する
+     */
+    delete: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          /** @description ライバルID */
+          id: number;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description No Content */
+        204: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Bad Request */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "*/*": components["schemas"]["dto.ErrorResponse"];
+          };
+        };
+      };
+    };
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/health": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * ヘルスチェック
+     * @description サーバーの稼働状態を確認する
+     */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["dto.HealthResponse"];
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
-    schemas: {
-        "dto.AddRivalRequest": {
-            username: string;
-        };
-        "dto.CallbackRequest": {
-            avatar_url?: string;
-            email?: string;
-            github_user_id: number;
-            github_username: string;
-        };
-        "dto.CreateSlackNotificationRequest": {
-            webhook_url?: string;
-        };
-        "dto.ErrorResponse": {
-            /** @example エラーメッセージ */
-            error: string;
-        };
-        "dto.HealthResponse": {
-            /** @example ok */
-            status: string;
-        };
-        "dto.MessageResponse": {
-            /** @example 処理が完了しました */
-            message: string;
-        };
-        "dto.RivalResponse": {
-            /** @example https://avatars.githubusercontent.com/u/2 */
-            avatar_url: string;
-            created_at: string;
-            /** @example 67890 */
-            github_user_id: number;
-            /** @example rival-user */
-            github_username: string;
-            /** @example 1 */
-            id: number;
-        };
-        "dto.RivalsListResponse": {
-            /** @example 3 */
-            count: number;
-            /** @example 5 */
-            max_rivals: number;
-            rivals: components["schemas"]["dto.RivalResponse"][];
-        };
-        "dto.SlackNotificationSettingResponse": {
-            created_at: string;
-            /** @example 1 */
-            id: number;
-            /** @example true */
-            is_enabled: boolean;
-            updated_at: string;
-            /** @example https://hooks.slack.com/services/T00... */
-            webhook_url: string;
-        };
-        "dto.UpdateEnabledRequest": {
-            is_enabled?: boolean;
-        };
-        "dto.UpdateEnabledResponse": {
-            /** @example true */
-            is_enabled: boolean;
-        };
-        "dto.UserResponse": {
-            /** @example https://avatars.githubusercontent.com/u/1 */
-            avatar_url: string;
-            created_at?: string;
-            /** @example 12345 */
-            github_user_id: number;
-            /** @example octocat */
-            github_username: string;
-            /** @example 1 */
-            id: number;
-        };
-        "usecase.DailyCommitSummary": {
-            commit_count: number;
-            date: string;
-        };
-        "usecase.DashboardData": {
-            end_date: string;
-            my_stats: components["schemas"]["usecase.UserCommitStats"];
-            /** @description "weekly" or "monthly" */
-            period: string;
-            rivals: components["schemas"]["usecase.UserCommitStats"][];
-            start_date: string;
-        };
-        "usecase.RepositoryCommitSummary": {
-            commit_count: number;
-            repository: string;
-        };
-        "usecase.UserCommitStats": {
-            avatar_url: string;
-            daily_stats: components["schemas"]["usecase.DailyCommitSummary"][];
-            github_user_id: number;
-            github_username: string;
-            repo_stats: components["schemas"]["usecase.RepositoryCommitSummary"][];
-            total_commits: number;
-        };
+  schemas: {
+    "dto.ActivityItem": {
+      /** @example https://avatars.githubusercontent.com/u/1 */
+      avatar_url: string;
+      /** @example 3 */
+      commit_count: number;
+      /** @example 2026-02-15 */
+      date: string;
+      /** @example tanaka */
+      github_username: string;
+      /** @example nextjs-portfolio */
+      repository: string;
     };
-    responses: never;
-    parameters: never;
-    requestBodies: never;
-    headers: never;
-    pathItems: never;
+    "dto.ActivityStreamResponse": {
+      activities: components["schemas"]["dto.ActivityItem"][];
+    };
+    "dto.AddRivalRequest": {
+      username: string;
+    };
+    "dto.CallbackRequest": {
+      avatar_url?: string;
+      email?: string;
+      github_user_id: number;
+      github_username: string;
+    };
+    "dto.CreateSlackNotificationRequest": {
+      webhook_url?: string;
+    };
+    "dto.ErrorResponse": {
+      /** @example エラーメッセージ */
+      error: string;
+    };
+    "dto.HealthResponse": {
+      /** @example ok */
+      status: string;
+    };
+    "dto.MessageResponse": {
+      /** @example 処理が完了しました */
+      message: string;
+    };
+    "dto.RhythmResponse": {
+      /** @example 2026-02-09/2026-02-15 */
+      period: string;
+      users: components["schemas"]["dto.UserRhythm"][];
+    };
+    "dto.RivalResponse": {
+      /** @example https://avatars.githubusercontent.com/u/2 */
+      avatar_url: string;
+      created_at: string;
+      /** @example 67890 */
+      github_user_id: number;
+      /** @example rival-user */
+      github_username: string;
+      /** @example 1 */
+      id: number;
+    };
+    "dto.RivalsListResponse": {
+      /** @example 3 */
+      count: number;
+      /** @example 5 */
+      max_rivals: number;
+      rivals: components["schemas"]["dto.RivalResponse"][];
+    };
+    "dto.SlackNotificationSettingResponse": {
+      created_at: string;
+      /** @example 1 */
+      id: number;
+      /** @example true */
+      is_enabled: boolean;
+      updated_at: string;
+      /** @example https://hooks.slack.com/services/T00... */
+      webhook_url: string;
+    };
+    "dto.UpdateEnabledRequest": {
+      is_enabled?: boolean;
+    };
+    "dto.UpdateEnabledResponse": {
+      /** @example true */
+      is_enabled: boolean;
+    };
+    "dto.UserResponse": {
+      /** @example https://avatars.githubusercontent.com/u/1 */
+      avatar_url: string;
+      created_at?: string;
+      /** @example 12345 */
+      github_user_id: number;
+      /** @example octocat */
+      github_username: string;
+      /** @example 1 */
+      id: number;
+    };
+    "dto.UserRhythm": {
+      /** @example https://avatars.githubusercontent.com/u/1 */
+      avatar_url: string;
+      /** @example tanaka */
+      github_username: string;
+      /** @example 安定型 */
+      pattern_label: string;
+      weekly_rhythm: components["schemas"]["dto.WeeklyRhythm"];
+    };
+    "dto.WeeklyRhythm": {
+      /** @example true */
+      fri?: boolean;
+      /** @example true */
+      mon?: boolean;
+      /** @example true */
+      sat?: boolean;
+      /** @example true */
+      sun?: boolean;
+      /** @example true */
+      thu?: boolean;
+      /** @example true */
+      tue?: boolean;
+      /** @example false */
+      wed?: boolean;
+    };
+    "usecase.DailyCommitSummary": {
+      commit_count: number;
+      date: string;
+    };
+    "usecase.DashboardData": {
+      end_date: string;
+      my_stats: components["schemas"]["usecase.UserCommitStats"];
+      /** @description "weekly" or "monthly" */
+      period: string;
+      rivals: components["schemas"]["usecase.UserCommitStats"][];
+      start_date: string;
+    };
+    "usecase.RepositoryCommitSummary": {
+      commit_count: number;
+      repository: string;
+    };
+    "usecase.UserCommitStats": {
+      avatar_url: string;
+      daily_stats: components["schemas"]["usecase.DailyCommitSummary"][];
+      github_user_id: number;
+      github_username: string;
+      repo_stats: components["schemas"]["usecase.RepositoryCommitSummary"][];
+      total_commits: number;
+    };
+  };
+  responses: never;
+  parameters: never;
+  requestBodies: never;
+  headers: never;
+  pathItems: never;
 }
 export type $defs = Record<string, never>;
 export type operations = Record<string, never>;

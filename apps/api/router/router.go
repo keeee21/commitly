@@ -25,6 +25,7 @@ func SetupRoutes(e *echo.Echo, db *gorm.DB) {
 	userUsecase := usecase.NewUserUsecase(userRepo, githubGateway)
 	rivalUsecase := usecase.NewRivalUsecase(rivalRepo, githubGateway)
 	dashboardUsecase := usecase.NewDashboardUsecase(commitStatsRepo)
+	activityUsecase := usecase.NewActivityUsecase(commitStatsRepo)
 	slackNotificationUsecase := usecase.NewSlackNotificationUsecase(slackNotificationRepo)
 
 	// Controllers
@@ -33,6 +34,7 @@ func SetupRoutes(e *echo.Echo, db *gorm.DB) {
 	userCtrl := controller.NewUserController(userUsecase)
 	rivalCtrl := controller.NewRivalController(rivalUsecase)
 	dashboardCtrl := controller.NewDashboardController(dashboardUsecase, rivalUsecase)
+	activityCtrl := controller.NewActivityController(activityUsecase, rivalUsecase)
 	slackNotificationCtrl := controller.NewSlackNotificationController(slackNotificationUsecase)
 
 	// Health check
@@ -63,6 +65,11 @@ func SetupRoutes(e *echo.Echo, db *gorm.DB) {
 	dashboard := protected.Group("/dashboard")
 	dashboard.GET("/weekly", dashboardCtrl.GetWeeklyDashboard)
 	dashboard.GET("/monthly", dashboardCtrl.GetMonthlyDashboard)
+
+	// Activity routes
+	activity := protected.Group("/activity")
+	activity.GET("/stream", activityCtrl.GetActivityStream)
+	activity.GET("/rhythm", activityCtrl.GetRhythm)
 
 	// Slack notification routes
 	slack := protected.Group("/notifications/slack")

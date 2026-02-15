@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Activity,
   Bell,
   ChevronRight,
   LayoutDashboard,
@@ -37,6 +38,11 @@ const menuItems = [
     title: "Dashboard",
     url: ROUTES.DASHBOARD,
     icon: LayoutDashboard,
+  },
+  {
+    title: "Activity",
+    url: ROUTES.ACTIVITY,
+    icon: Activity,
   },
   {
     title: "Rivals",
