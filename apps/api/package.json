@@ -6,7 +6,11 @@
   "scripts": {
     "dev": "make run",
     "build": "make build",
-    "start": "make start"
+    "start": "make start",
+    "test": "go test ./...",
+    "lint": "go vet ./...",
+    "format": "gofmt -w .",
+    "openapi:generate": "make swagger-gen"
   },
   "keywords": [],
   "author": "",

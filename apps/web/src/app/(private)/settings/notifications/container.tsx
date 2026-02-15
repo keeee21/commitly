@@ -4,7 +4,7 @@ import type { components } from "@/lib/api/schema";
 import { NotificationsPresenter } from "./presenter";
 
 type SlackNotificationSetting =
-  components["schemas"]["SlackNotificationSetting"];
+  components["schemas"]["dto.SlackNotificationSettingResponse"];
 
 export async function NotificationsContainer() {
   const session = await auth();

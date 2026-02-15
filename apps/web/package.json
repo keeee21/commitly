@@ -6,9 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "biome check",
-    "format": "biome format --write",
-    "check": "biome check --write ./src --no-errors-on-unmatched --files-ignore-unknown=true",
+    "lint": "biome check .",
+    "format": "biome check --write .",
     "openapi:generate": "openapi-typescript ../../packages/openapi/schema.yaml -o src/lib/api/schema.ts"
   },
   "dependencies": {

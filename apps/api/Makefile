@@ -7,5 +7,9 @@ build:
 start:
 	./bin/main
 
-generate:
-	oapi-codegen -config .oapi-codegen.yaml ../../packages/openapi/schema.yaml
+swagger:
+	swag init -g main.go -o ./swagger --parseInternal --parseDependency
+	rm -f ./swagger/docs.go
+
+swagger-gen: swagger
+	cd ../../packages/openapi && npx swagger2openapi ../../apps/api/swagger/swagger.json -o schema.yaml --yaml

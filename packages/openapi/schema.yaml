@@ -1,564 +1,527 @@
 openapi: 3.0.0
 info:
-  title: Commitly API
-  version: 1.0.0
   description: API for tracking GitHub commit activity and comparing with rivals
-
-servers:
-  - url: http://localhost:8080
-    description: Local development server
-
+  title: Commitly API
+  contact: {}
+  version: "1.0"
 paths:
-  /health:
-    get:
-      summary: Health check
-      operationId: healthCheck
-      tags:
-        - System
-      responses:
-        '200':
-          description: API is healthy
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HealthResponse'
-
   /api/auth/callback:
     post:
-      summary: GitHub OAuth callback
-      description: Receive user info from NextAuth.js and create/update user in database
-      operationId: authCallback
+      description: フロントエンド（NextAuth.js）からユーザー情報を受け取りDBに保存
       tags:
-        - Auth
+        - auth
+      summary: Github OAuth コールバック
       requestBody:
-        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AuthCallbackRequest'
+              $ref: "#/components/schemas/dto.CallbackRequest"
+        description: コールバックリクエスト
+        required: true
       responses:
-        '200':
-          description: User created/updated successfully
+        "200":
+          description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
-        '400':
-          description: Bad request
+                $ref: "#/components/schemas/dto.UserResponse"
+        "400":
+          description: Bad Request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
-
+                $ref: "#/components/schemas/dto.ErrorResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/dto.ErrorResponse"
   /api/auth/logout:
     post:
-      summary: Logout
-      operationId: logout
+      description: セッションはフロントエンド（NextAuth.js）で管理されるため、バックエンドでは特に処理不要
       tags:
-        - Auth
+        - auth
+      summary: ログアウト
       responses:
-        '200':
-          description: Logged out successfully
+        "200":
+          description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MessageResponse'
-
+                $ref: "#/components/schemas/dto.MessageResponse"
+  /api/dashboard/monthly:
+    get:
+      security:
+        - GitHubUserID: []
+      description: 今月のコミット統計を自分とライバルで比較
+      tags:
+        - dashboard
+      summary: 月間ダッシュボードデータを取得
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/usecase.DashboardData"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/dto.ErrorResponse"
+  /api/dashboard/weekly:
+    get:
+      security:
+        - GitHubUserID: []
+      description: 直近7日間のコミット統計を自分とライバルで比較
+      tags:
+        - dashboard
+      summary: 週間ダッシュボードデータを取得
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/usecase.DashboardData"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/dto.ErrorResponse"
   /api/me:
     get:
-      summary: Get current user
-      operationId: getMe
-      tags:
-        - User
       security:
         - GitHubUserID: []
+      description: 認証済みユーザーの情報を返す
+      tags:
+        - user
+      summary: 現在のユーザー情報を取得
       responses:
-        '200':
-          description: Current user info
+        "200":
+          description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
-  /api/rivals:
+                $ref: "#/components/schemas/dto.UserResponse"
+  /api/notifications/slack:
     get:
-      summary: Get rivals list
-      operationId: getRivals
-      tags:
-        - Rivals
       security:
         - GitHubUserID: []
+      description: 現在のSlack通知設定を返す（Webhook URLはマスク済み）
+      tags:
+        - notifications
+      summary: Slack通知設定を取得
       responses:
-        '200':
-          description: Rivals list
+        "200":
+          description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RivalsResponse'
-        '401':
-          description: Unauthorized
+                $ref: "#/components/schemas/dto.SlackNotificationSettingResponse"
+        "404":
+          description: Not Found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
-    post:
-      summary: Add a rival
-      operationId: addRival
-      tags:
-        - Rivals
+                $ref: "#/components/schemas/dto.ErrorResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/dto.ErrorResponse"
+    put:
       security:
         - GitHubUserID: []
+      description: Slack通知設定の有効/無効を切り替える
+      tags:
+        - notifications
+      summary: Slack通知の有効/無効を更新
       requestBody:
-        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AddRivalRequest'
+              $ref: "#/components/schemas/dto.UpdateEnabledRequest"
+        description: 有効/無効更新リクエスト
+        required: true
       responses:
-        '201':
-          description: Rival added successfully
+        "200":
+          description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Rival'
-        '400':
-          description: Bad request
+                $ref: "#/components/schemas/dto.UpdateEnabledResponse"
+        "400":
+          description: Bad Request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
-        '401':
-          description: Unauthorized
+                $ref: "#/components/schemas/dto.ErrorResponse"
+        "500":
+          description: Internal Server Error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
-
-  /api/rivals/{id}:
-    delete:
-      summary: Remove a rival
-      operationId: removeRival
-      tags:
-        - Rivals
+                $ref: "#/components/schemas/dto.ErrorResponse"
+    post:
       security:
         - GitHubUserID: []
+      description: Slack Webhook URLを登録して通知設定を作成する
+      tags:
+        - notifications
+      summary: Slack通知設定を作成
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/dto.CreateSlackNotificationRequest"
+        description: Slack通知設定作成リクエスト
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/dto.SlackNotificationSettingResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/dto.ErrorResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/dto.ErrorResponse"
+    delete:
+      security:
+        - GitHubUserID: []
+      description: Slack通知設定を削除する
+      tags:
+        - notifications
+      summary: Slack通知設定を削除
+      responses:
+        "204":
+          description: No Content
+        "500":
+          description: Internal Server Error
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/dto.ErrorResponse"
+  /api/rivals:
+    get:
+      security:
+        - GitHubUserID: []
+      description: 登録済みのライバル一覧を返す
+      tags:
+        - rivals
+      summary: ライバル一覧を取得
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/dto.RivalsListResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/dto.ErrorResponse"
+    post:
+      security:
+        - GitHubUserID: []
+      description: GitHubユーザー名を指定してライバルを登録する
+      tags:
+        - rivals
+      summary: ライバルを追加
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/dto.AddRivalRequest"
+        description: ライバル追加リクエスト
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/dto.RivalResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/dto.ErrorResponse"
+  "/api/rivals/{id}":
+    delete:
+      security:
+        - GitHubUserID: []
+      description: 指定IDのライバルを削除する
+      tags:
+        - rivals
+      summary: ライバルを削除
       parameters:
-        - name: id
+        - description: ライバルID
+          name: id
           in: path
           required: true
           schema:
             type: integer
-            format: int64
       responses:
-        '204':
-          description: Rival removed successfully
-        '400':
-          description: Bad request
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
           content:
-            application/json:
+            "*/*":
               schema:
-                $ref: '#/components/schemas/Error'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
-  /api/dashboard/weekly:
+                $ref: "#/components/schemas/dto.ErrorResponse"
+  /health:
     get:
-      summary: Get weekly dashboard data
-      operationId: getWeeklyDashboard
+      description: サーバーの稼働状態を確認する
       tags:
-        - Dashboard
-      security:
-        - GitHubUserID: []
+        - health
+      summary: ヘルスチェック
       responses:
-        '200':
-          description: Weekly dashboard data
+        "200":
+          description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DashboardData'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
-  /api/dashboard/monthly:
-    get:
-      summary: Get monthly dashboard data
-      operationId: getMonthlyDashboard
-      tags:
-        - Dashboard
-      security:
-        - GitHubUserID: []
-      responses:
-        '200':
-          description: Monthly dashboard data
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DashboardData'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
-  /api/notifications/slack:
-    get:
-      summary: Get Slack notification setting
-      operationId: getSlackNotificationSetting
-      tags:
-        - Notifications
-      security:
-        - GitHubUserID: []
-      responses:
-        '200':
-          description: Slack notification setting
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SlackNotificationSetting'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: Setting not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-    post:
-      summary: Create Slack notification setting
-      operationId: createSlackNotificationSetting
-      tags:
-        - Notifications
-      security:
-        - GitHubUserID: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateSlackNotificationRequest'
-      responses:
-        '201':
-          description: Slack notification setting created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SlackNotificationSetting'
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-    put:
-      summary: Update Slack notification setting
-      operationId: updateSlackNotificationSetting
-      tags:
-        - Notifications
-      security:
-        - GitHubUserID: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateSlackNotificationRequest'
-      responses:
-        '200':
-          description: Slack notification setting updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SlackNotificationSetting'
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: Setting not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-    delete:
-      summary: Delete Slack notification setting
-      operationId: deleteSlackNotificationSetting
-      tags:
-        - Notifications
-      security:
-        - GitHubUserID: []
-      responses:
-        '204':
-          description: Slack notification setting deleted
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: Setting not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
+                $ref: "#/components/schemas/dto.HealthResponse"
+servers:
+  - url: //localhost:8080
 components:
   securitySchemes:
     GitHubUserID:
       type: apiKey
-      in: header
       name: X-GitHub-User-ID
-      description: GitHub User ID from NextAuth.js session
-
+      in: header
   schemas:
-    HealthResponse:
+    dto.AddRivalRequest:
       type: object
+      required:
+        - username
+      properties:
+        username:
+          type: string
+    dto.CallbackRequest:
+      type: object
+      required:
+        - github_user_id
+        - github_username
+      properties:
+        avatar_url:
+          type: string
+        email:
+          type: string
+        github_user_id:
+          type: integer
+        github_username:
+          type: string
+    dto.CreateSlackNotificationRequest:
+      type: object
+      properties:
+        webhook_url:
+          type: string
+    dto.ErrorResponse:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          example: エラーメッセージ
+    dto.HealthResponse:
+      type: object
+      required:
+        - status
       properties:
         status:
           type: string
           example: ok
-      required:
-        - status
-
-    Error:
+    dto.MessageResponse:
       type: object
-      properties:
-        error:
-          type: string
       required:
-        - error
-
-    MessageResponse:
-      type: object
+        - message
       properties:
         message:
           type: string
-      required:
-        - message
-
-    AuthCallbackRequest:
+          example: 処理が完了しました
+    dto.RivalResponse:
       type: object
-      properties:
-        github_user_id:
-          type: integer
-          format: int64
-        github_username:
-          type: string
-        avatar_url:
-          type: string
       required:
+        - avatar_url
+        - created_at
         - github_user_id
         - github_username
-
-    User:
-      type: object
+        - id
       properties:
-        id:
-          type: integer
-          format: int64
-        github_user_id:
-          type: integer
-          format: int64
-        github_username:
-          type: string
         avatar_url:
           type: string
+          example: https://avatars.githubusercontent.com/u/2
         created_at:
           type: string
-          format: date-time
-      required:
-        - id
-        - github_user_id
-        - github_username
-
-    Rival:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
         github_user_id:
           type: integer
-          format: int64
+          example: 67890
         github_username:
           type: string
-        avatar_url:
-          type: string
-        created_at:
-          type: string
-          format: date-time
-      required:
-        - id
-        - github_user_id
-        - github_username
-
-    RivalsResponse:
+          example: rival-user
+        id:
+          type: integer
+          example: 1
+    dto.RivalsListResponse:
       type: object
+      required:
+        - count
+        - max_rivals
+        - rivals
       properties:
+        count:
+          type: integer
+          example: 3
+        max_rivals:
+          type: integer
+          example: 5
         rivals:
           type: array
           items:
-            $ref: '#/components/schemas/Rival'
-        count:
-          type: integer
-        max_rivals:
-          type: integer
+            $ref: "#/components/schemas/dto.RivalResponse"
+    dto.SlackNotificationSettingResponse:
+      type: object
       required:
-        - rivals
-        - count
-        - max_rivals
-
-    AddRivalRequest:
+        - created_at
+        - id
+        - is_enabled
+        - updated_at
+        - webhook_url
+      properties:
+        created_at:
+          type: string
+        id:
+          type: integer
+          example: 1
+        is_enabled:
+          type: boolean
+          example: true
+        updated_at:
+          type: string
+        webhook_url:
+          type: string
+          example: https://hooks.slack.com/services/T00...
+    dto.UpdateEnabledRequest:
       type: object
       properties:
-        username:
-          type: string
-      required:
-        - username
-
-    DailyCommitSummary:
+        is_enabled:
+          type: boolean
+    dto.UpdateEnabledResponse:
       type: object
-      properties:
-        date:
-          type: string
-          format: date
-        commit_count:
-          type: integer
       required:
-        - date
-        - commit_count
-
-    RepositoryCommitSummary:
-      type: object
+        - is_enabled
       properties:
-        repository:
-          type: string
-        commit_count:
-          type: integer
+        is_enabled:
+          type: boolean
+          example: true
+    dto.UserResponse:
+      type: object
       required:
-        - repository
-        - commit_count
-
-    UserCommitStats:
-      type: object
+        - avatar_url
+        - github_user_id
+        - github_username
+        - id
       properties:
-        github_user_id:
-          type: integer
-          format: int64
-        github_username:
-          type: string
         avatar_url:
           type: string
-        total_commits:
+          example: https://avatars.githubusercontent.com/u/1
+        created_at:
+          type: string
+        github_user_id:
           type: integer
+          example: 12345
+        github_username:
+          type: string
+          example: octocat
+        id:
+          type: integer
+          example: 1
+    usecase.DailyCommitSummary:
+      type: object
+      required:
+        - commit_count
+        - date
+      properties:
+        commit_count:
+          type: integer
+        date:
+          type: string
+    usecase.DashboardData:
+      type: object
+      required:
+        - end_date
+        - my_stats
+        - period
+        - rivals
+        - start_date
+      properties:
+        end_date:
+          type: string
+        my_stats:
+          $ref: "#/components/schemas/usecase.UserCommitStats"
+        period:
+          description: '"weekly" or "monthly"'
+          type: string
+        rivals:
+          type: array
+          items:
+            $ref: "#/components/schemas/usecase.UserCommitStats"
+        start_date:
+          type: string
+    usecase.RepositoryCommitSummary:
+      type: object
+      required:
+        - commit_count
+        - repository
+      properties:
+        commit_count:
+          type: integer
+        repository:
+          type: string
+    usecase.UserCommitStats:
+      type: object
+      required:
+        - avatar_url
+        - daily_stats
+        - github_user_id
+        - github_username
+        - repo_stats
+        - total_commits
+      properties:
+        avatar_url:
+          type: string
         daily_stats:
           type: array
           items:
-            $ref: '#/components/schemas/DailyCommitSummary'
+            $ref: "#/components/schemas/usecase.DailyCommitSummary"
+        github_user_id:
+          type: integer
+        github_username:
+          type: string
         repo_stats:
           type: array
           items:
-            $ref: '#/components/schemas/RepositoryCommitSummary'
-      required:
-        - github_user_id
-        - github_username
-        - total_commits
-        - daily_stats
-        - repo_stats
-
-    DashboardData:
-      type: object
-      properties:
-        period:
-          type: string
-          enum: [weekly, monthly]
-        start_date:
-          type: string
-          format: date
-        end_date:
-          type: string
-          format: date
-        my_stats:
-          $ref: '#/components/schemas/UserCommitStats'
-        rivals:
-          type: array
-          items:
-            $ref: '#/components/schemas/UserCommitStats'
-      required:
-        - period
-        - start_date
-        - end_date
-        - my_stats
-        - rivals
-
-    SlackNotificationSetting:
-      type: object
-      properties:
-        id:
+            $ref: "#/components/schemas/usecase.RepositoryCommitSummary"
+        total_commits:
           type: integer
-          format: int64
-        webhook_url:
-          type: string
-          description: Slack Webhook URL (masked for security)
-        is_enabled:
-          type: boolean
-        created_at:
-          type: string
-          format: date-time
-        updated_at:
-          type: string
-          format: date-time
-      required:
-        - id
-        - webhook_url
-        - is_enabled
-
-    CreateSlackNotificationRequest:
-      type: object
-      properties:
-        webhook_url:
-          type: string
-          description: Slack Webhook URL (must start with https://hooks.slack.com/services/)
-      required:
-        - webhook_url
-
-    UpdateSlackNotificationRequest:
-      type: object
-      properties:
-        is_enabled:
-          type: boolean
-      required:
-        - is_enabled

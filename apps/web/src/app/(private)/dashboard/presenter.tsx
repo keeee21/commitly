@@ -9,7 +9,7 @@ function formatMonth(dateStr: string): string {
   return `${date.getFullYear()}年${date.getMonth() + 1}月`;
 }
 
-type DashboardData = components["schemas"]["DashboardData"];
+type DashboardData = components["schemas"]["usecase.DashboardData"];
 
 type DashboardPresenterProps = {
   period: "weekly" | "monthly";
@@ -198,7 +198,7 @@ export function DashboardPresenter({
 }
 
 type UserStatsCardProps = {
-  stats: components["schemas"]["UserCommitStats"];
+  stats: components["schemas"]["usecase.UserCommitStats"];
   isMe?: boolean;
 };
 

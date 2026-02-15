@@ -10,33 +10,33 @@ import (
 
 // DailyCommitSummary 日別コミットサマリー
 type DailyCommitSummary struct {
-	Date        string `json:"date"`
-	CommitCount int    `json:"commit_count"`
+	Date        string `json:"date" validate:"required"`
+	CommitCount int    `json:"commit_count" validate:"required"`
 }
 
 // RepositoryCommitSummary リポジトリ別コミットサマリー
 type RepositoryCommitSummary struct {
-	Repository  string `json:"repository"`
-	CommitCount int    `json:"commit_count"`
+	Repository  string `json:"repository" validate:"required"`
+	CommitCount int    `json:"commit_count" validate:"required"`
 }
 
 // UserCommitStats ユーザーのコミット統計
 type UserCommitStats struct {
-	GithubUserID   uint64                    `json:"github_user_id"`
-	GithubUsername string                    `json:"github_username"`
-	AvatarURL      string                    `json:"avatar_url"`
-	TotalCommits   int                       `json:"total_commits"`
-	DailyStats     []DailyCommitSummary      `json:"daily_stats"`
-	RepoStats      []RepositoryCommitSummary `json:"repo_stats"`
+	GithubUserID   uint64                    `json:"github_user_id" validate:"required"`
+	GithubUsername string                    `json:"github_username" validate:"required"`
+	AvatarURL      string                    `json:"avatar_url" validate:"required"`
+	TotalCommits   int                       `json:"total_commits" validate:"required"`
+	DailyStats     []DailyCommitSummary      `json:"daily_stats" validate:"required"`
+	RepoStats      []RepositoryCommitSummary `json:"repo_stats" validate:"required"`
 }
 
 // DashboardData ダッシュボードデータ
 type DashboardData struct {
-	Period    string            `json:"period"` // "weekly" or "monthly"
-	StartDate string            `json:"start_date"`
-	EndDate   string            `json:"end_date"`
-	MyStats   UserCommitStats   `json:"my_stats"`
-	Rivals    []UserCommitStats `json:"rivals"`
+	Period    string            `json:"period" validate:"required"` // "weekly" or "monthly"
+	StartDate string            `json:"start_date" validate:"required"`
+	EndDate   string            `json:"end_date" validate:"required"`
+	MyStats   UserCommitStats   `json:"my_stats" validate:"required"`
+	Rivals    []UserCommitStats `json:"rivals" validate:"required"`
 }
 
 // IDashboardUsecase ダッシュボードユースケースのインターフェース
@@ -109,8 +109,8 @@ func (u *dashboardUsecase) getDashboard(ctx context.Context, period string, star
 	}
 
 	// 日別・リポジトリ別に集計
-	dailyMap := make(map[uint64]map[string]int)  // githubUserID -> date -> count
-	repoMap := make(map[uint64]map[string]int)   // githubUserID -> repo -> count
+	dailyMap := make(map[uint64]map[string]int) // githubUserID -> date -> count
+	repoMap := make(map[uint64]map[string]int)  // githubUserID -> repo -> count
 
 	for _, stat := range stats {
 		if dailyMap[stat.GithubUserID] == nil {

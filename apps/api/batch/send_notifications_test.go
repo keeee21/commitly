@@ -14,11 +14,11 @@ import (
 
 // mockSlackNotificationSettingRepository テスト用のモック
 type mockSlackNotificationSettingRepository struct {
-	FindByUserIDFunc    func(ctx context.Context, userID uint64) (*models.SlackNotificationSetting, error)
-	FindAllEnabledFunc  func(ctx context.Context) ([]models.SlackNotificationSetting, error)
-	UpsertFunc          func(ctx context.Context, setting *models.SlackNotificationSetting) error
-	UpdateEnabledFunc   func(ctx context.Context, userID uint64, isEnabled bool) error
-	DeleteFunc          func(ctx context.Context, userID uint64) error
+	FindByUserIDFunc   func(ctx context.Context, userID uint64) (*models.SlackNotificationSetting, error)
+	FindAllEnabledFunc func(ctx context.Context) ([]models.SlackNotificationSetting, error)
+	UpsertFunc         func(ctx context.Context, setting *models.SlackNotificationSetting) error
+	UpdateEnabledFunc  func(ctx context.Context, userID uint64, isEnabled bool) error
+	DeleteFunc         func(ctx context.Context, userID uint64) error
 }
 
 func (m *mockSlackNotificationSettingRepository) FindByUserID(ctx context.Context, userID uint64) (*models.SlackNotificationSetting, error) {

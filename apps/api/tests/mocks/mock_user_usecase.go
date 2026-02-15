@@ -8,7 +8,7 @@ import (
 
 // MockUserUsecase is a mock of IUserUsecase interface.
 type MockUserUsecase struct {
-	GetOrCreateUserFunc      func(ctx context.Context, githubUserID uint64, githubUsername, email, avatarURL string) (*models.User, error)
+	GetOrCreateUserFunc       func(ctx context.Context, githubUserID uint64, githubUsername, email, avatarURL string) (*models.User, error)
 	GetUserByGithubUserIDFunc func(ctx context.Context, githubUserID uint64) (*models.User, error)
 }
 

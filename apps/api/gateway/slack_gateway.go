@@ -23,10 +23,10 @@ type SlackMessage struct {
 
 // SlackBlock Slackブロック構造体
 type SlackBlock struct {
-	Type     string       `json:"type"`
-	Text     *SlackText   `json:"text,omitempty"`
-	Fields   []SlackText  `json:"fields,omitempty"`
-	Elements []SlackText  `json:"elements,omitempty"` // context block用
+	Type     string      `json:"type"`
+	Text     *SlackText  `json:"text,omitempty"`
+	Fields   []SlackText `json:"fields,omitempty"`
+	Elements []SlackText `json:"elements,omitempty"` // context block用
 }
 
 // SlackText Slackテキスト構造体

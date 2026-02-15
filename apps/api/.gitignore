@@ -36,3 +36,6 @@ go.work
 Thumbs.db
 
 docs/**/*.md
+
+# Swagger generated files
+swagger/

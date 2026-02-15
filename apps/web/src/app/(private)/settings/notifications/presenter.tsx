@@ -12,7 +12,7 @@ import {
 } from "./actions";
 
 type SlackNotificationSetting =
-  components["schemas"]["SlackNotificationSetting"];
+  components["schemas"]["dto.SlackNotificationSettingResponse"];
 
 type NotificationsPresenterProps = {
   slackSetting: SlackNotificationSetting | null;

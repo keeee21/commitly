@@ -56,15 +56,15 @@ func TestRoutesRegistered(t *testing.T) {
 
 	// 期待されるルートのリスト
 	expectedRoutes := map[string][]string{
-		"/health":                    {http.MethodGet},
-		"/api/auth/callback":         {http.MethodPost},
-		"/api/auth/logout":           {http.MethodPost},
-		"/api/me":                    {http.MethodGet},
-		"/api/rivals":                {http.MethodGet, http.MethodPost},
-		"/api/rivals/:id":            {http.MethodDelete},
-		"/api/dashboard/weekly":      {http.MethodGet},
-		"/api/dashboard/monthly":     {http.MethodGet},
-		"/api/notifications/slack":   {http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete},
+		"/health":                  {http.MethodGet},
+		"/api/auth/callback":       {http.MethodPost},
+		"/api/auth/logout":         {http.MethodPost},
+		"/api/me":                  {http.MethodGet},
+		"/api/rivals":              {http.MethodGet, http.MethodPost},
+		"/api/rivals/:id":          {http.MethodDelete},
+		"/api/dashboard/weekly":    {http.MethodGet},
+		"/api/dashboard/monthly":   {http.MethodGet},
+		"/api/notifications/slack": {http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete},
 	}
 
 	// ルートが登録されていることを確認

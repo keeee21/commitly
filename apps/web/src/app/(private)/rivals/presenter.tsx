@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import type { components } from "@/lib/api/schema";
 import { type ActionState, addRival, removeRival } from "./actions";
 
-type Rival = components["schemas"]["Rival"];
+type Rival = components["schemas"]["dto.RivalResponse"];
 
 type RivalsPresenterProps = {
   rivals: Rival[];

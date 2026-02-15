@@ -9,11 +9,11 @@ import (
 
 // MockGithubGateway is a mock of IGithubGateway interface.
 type MockGithubGateway struct {
-	GetUserFunc               func(ctx context.Context, username string) (*gateway.GithubUser, error)
-	GetUserEventsFunc         func(ctx context.Context, username string, page int) ([]gateway.GithubEvent, error)
-	GetUserPublicReposFunc    func(ctx context.Context, username string) ([]gateway.GithubRepo, error)
-	GetUserContributionsFunc  func(ctx context.Context, username string, from, to string) ([]gateway.ContributionDay, error)
-	GetRepositoryCommitsFunc  func(ctx context.Context, owner, repo, author string, since, until time.Time) ([]gateway.RepositoryCommit, error)
+	GetUserFunc              func(ctx context.Context, username string) (*gateway.GithubUser, error)
+	GetUserEventsFunc        func(ctx context.Context, username string, page int) ([]gateway.GithubEvent, error)
+	GetUserPublicReposFunc   func(ctx context.Context, username string) ([]gateway.GithubRepo, error)
+	GetUserContributionsFunc func(ctx context.Context, username string, from, to string) ([]gateway.ContributionDay, error)
+	GetRepositoryCommitsFunc func(ctx context.Context, owner, repo, author string, since, until time.Time) ([]gateway.RepositoryCommit, error)
 }
 
 func (m *MockGithubGateway) GetUser(ctx context.Context, username string) (*gateway.GithubUser, error) {

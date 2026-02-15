@@ -3,7 +3,7 @@ import { client } from "@/lib/api/client";
 import type { components } from "@/lib/api/schema";
 import { RivalsPresenter } from "./presenter";
 
-type Rival = components["schemas"]["Rival"];
+type Rival = components["schemas"]["dto.RivalResponse"];
 
 export async function RivalsContainer() {
   const session = await auth();

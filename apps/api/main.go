@@ -11,6 +11,14 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
+// @title           Commitly API
+// @version         1.0
+// @description     API for tracking GitHub commit activity and comparing with rivals
+// @host            localhost:8080
+// @BasePath        /
+// @securityDefinitions.apikey  GitHubUserID
+// @in                          header
+// @name                        X-GitHub-User-ID
 func main() {
 	// Load .env file
 	if err := godotenv.Load(); err != nil {

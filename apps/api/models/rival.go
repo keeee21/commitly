@@ -5,10 +5,10 @@ import "time"
 // Rival ライバル登録
 type Rival struct {
 	ID                  uint64    `gorm:"primaryKey;autoIncrement"`
-	UserID              uint64    `gorm:"index;not null"`           // FK → users.id
-	RivalGithubUserID   uint64    `gorm:"not null"`                 // ライバルのGithub User ID
-	RivalGithubUsername string    `gorm:"size:255;not null"`        // ライバルのGithubユーザー名
-	RivalAvatarURL      string    `gorm:"size:512"`                 // ライバルのGithubアバターURL
+	UserID              uint64    `gorm:"index;not null"`    // FK → users.id
+	RivalGithubUserID   uint64    `gorm:"not null"`          // ライバルのGithub User ID
+	RivalGithubUsername string    `gorm:"size:255;not null"` // ライバルのGithubユーザー名
+	RivalAvatarURL      string    `gorm:"size:512"`          // ライバルのGithubアバターURL
 	CreatedAt           time.Time `gorm:"autoCreateTime"`
 
 	// Relations

@@ -14,8 +14,14 @@
       "cache": false,
       "persistent": true
     },
+    "test": {
+      "cache": false
+    },
     "lint": {
       "outputs": []
+    },
+    "format": {
+      "cache": false
     },
     "openapi:generate": {
       "cache": false,

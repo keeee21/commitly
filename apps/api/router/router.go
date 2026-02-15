@@ -28,6 +28,7 @@ func SetupRoutes(e *echo.Echo, db *gorm.DB) {
 	slackNotificationUsecase := usecase.NewSlackNotificationUsecase(slackNotificationRepo)
 
 	// Controllers
+	healthCtrl := controller.NewHealthController()
 	authCtrl := controller.NewAuthController(userUsecase)
 	userCtrl := controller.NewUserController(userUsecase)
 	rivalCtrl := controller.NewRivalController(rivalUsecase)
@@ -35,9 +36,7 @@ func SetupRoutes(e *echo.Echo, db *gorm.DB) {
 	slackNotificationCtrl := controller.NewSlackNotificationController(slackNotificationUsecase)
 
 	// Health check
-	e.GET("/health", func(c echo.Context) error {
-		return c.JSON(200, map[string]string{"status": "ok"})
-	})
+	e.GET("/health", healthCtrl.HealthCheck)
 
 	// API routes
 	api := e.Group("/api")

@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/keeee21/commitly/api/dto"
 	"github.com/keeee21/commitly/api/models"
 	"github.com/keeee21/commitly/api/usecase"
 	"github.com/labstack/echo/v4"
@@ -31,31 +32,39 @@ func NewSlackNotificationController(slackNotificationUsecase usecase.ISlackNotif
 }
 
 // GetSetting Slack通知設定を取得
+// @Summary      Slack通知設定を取得
+// @Description  現在のSlack通知設定を返す（Webhook URLはマスク済み）
+// @Tags         notifications
+// @Produce      json
+// @Success      200 {object} dto.SlackNotificationSettingResponse
+// @Failure      404 {object} dto.ErrorResponse
+// @Failure      500 {object} dto.ErrorResponse
+// @Security     GitHubUserID
+// @Router       /api/notifications/slack [get]
 func (ctrl *slackNotificationController) GetSetting(c echo.Context) error {
 	user := c.Get("user").(*models.User)
 
 	setting, err := ctrl.slackNotificationUsecase.GetSetting(c.Request().Context(), user.ID)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{
-			"error": "Slack通知設定の取得に失敗しました",
+		return c.JSON(http.StatusInternalServerError, dto.ErrorResponse{
+			Error: "Slack通知設定の取得に失敗しました",
 		})
 	}
 
 	if setting == nil {
-		return c.JSON(http.StatusNotFound, map[string]string{
-			"error": "Slack通知設定が見つかりません",
+		return c.JSON(http.StatusNotFound, dto.ErrorResponse{
+			Error: "Slack通知設定が見つかりません",
 		})
 	}
 
-	// Webhook URLの一部をマスク（セキュリティのため）
 	maskedURL := maskWebhookURL(setting.WebhookURL)
 
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"id":          setting.ID,
-		"webhook_url": maskedURL,
-		"is_enabled":  setting.IsEnabled,
-		"created_at":  setting.CreatedAt,
-		"updated_at":  setting.UpdatedAt,
+	return c.JSON(http.StatusOK, dto.SlackNotificationSettingResponse{
+		ID:         setting.ID,
+		WebhookURL: maskedURL,
+		IsEnabled:  setting.IsEnabled,
+		CreatedAt:  setting.CreatedAt,
+		UpdatedAt:  setting.UpdatedAt,
 	})
 }
 
@@ -67,87 +76,105 @@ func maskWebhookURL(url string) string {
 	return url[:40] + "..."
 }
 
-// CreateRequest Slack通知設定作成リクエスト
-type CreateRequest struct {
-	WebhookURL string `json:"webhook_url"`
-}
-
 // Create Slack通知設定を作成
+// @Summary      Slack通知設定を作成
+// @Description  Slack Webhook URLを登録して通知設定を作成する
+// @Tags         notifications
+// @Accept       json
+// @Produce      json
+// @Param        request body dto.CreateSlackNotificationRequest true "Slack通知設定作成リクエスト"
+// @Success      201 {object} dto.SlackNotificationSettingResponse
+// @Failure      400 {object} dto.ErrorResponse
+// @Failure      500 {object} dto.ErrorResponse
+// @Security     GitHubUserID
+// @Router       /api/notifications/slack [post]
 func (ctrl *slackNotificationController) Create(c echo.Context) error {
 	user := c.Get("user").(*models.User)
 
-	var req CreateRequest
+	var req dto.CreateSlackNotificationRequest
 	if err := c.Bind(&req); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "リクエストが不正です",
+		return c.JSON(http.StatusBadRequest, dto.ErrorResponse{
+			Error: "リクエストが不正です",
 		})
 	}
 
-	// Webhook URL のバリデーション
 	if req.WebhookURL == "" {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "Webhook URLを入力してください",
+		return c.JSON(http.StatusBadRequest, dto.ErrorResponse{
+			Error: "Webhook URLを入力してください",
 		})
 	}
 
 	if !strings.HasPrefix(req.WebhookURL, slackWebhookURLPrefix) {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "無効なSlack Webhook URLです。https://hooks.slack.com/services/ で始まるURLを入力してください",
+		return c.JSON(http.StatusBadRequest, dto.ErrorResponse{
+			Error: "無効なSlack Webhook URLです。https://hooks.slack.com/services/ で始まるURLを入力してください",
 		})
 	}
 
 	setting, err := ctrl.slackNotificationUsecase.Create(c.Request().Context(), user.ID, req.WebhookURL)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{
-			"error": "Slack通知設定の作成に失敗しました",
+		return c.JSON(http.StatusInternalServerError, dto.ErrorResponse{
+			Error: "Slack通知設定の作成に失敗しました",
 		})
 	}
 
 	maskedURL := maskWebhookURL(setting.WebhookURL)
 
-	return c.JSON(http.StatusCreated, map[string]interface{}{
-		"id":          setting.ID,
-		"webhook_url": maskedURL,
-		"is_enabled":  setting.IsEnabled,
-		"created_at":  setting.CreatedAt,
-		"updated_at":  setting.UpdatedAt,
+	return c.JSON(http.StatusCreated, dto.SlackNotificationSettingResponse{
+		ID:         setting.ID,
+		WebhookURL: maskedURL,
+		IsEnabled:  setting.IsEnabled,
+		CreatedAt:  setting.CreatedAt,
+		UpdatedAt:  setting.UpdatedAt,
 	})
 }
 
-// UpdateEnabledRequest 有効/無効更新リクエスト
-type UpdateEnabledRequest struct {
-	IsEnabled bool `json:"is_enabled"`
-}
-
 // UpdateEnabled Slack通知の有効/無効を更新
+// @Summary      Slack通知の有効/無効を更新
+// @Description  Slack通知設定の有効/無効を切り替える
+// @Tags         notifications
+// @Accept       json
+// @Produce      json
+// @Param        request body dto.UpdateEnabledRequest true "有効/無効更新リクエスト"
+// @Success      200 {object} dto.UpdateEnabledResponse
+// @Failure      400 {object} dto.ErrorResponse
+// @Failure      500 {object} dto.ErrorResponse
+// @Security     GitHubUserID
+// @Router       /api/notifications/slack [put]
 func (ctrl *slackNotificationController) UpdateEnabled(c echo.Context) error {
 	user := c.Get("user").(*models.User)
 
-	var req UpdateEnabledRequest
+	var req dto.UpdateEnabledRequest
 	if err := c.Bind(&req); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "リクエストが不正です",
+		return c.JSON(http.StatusBadRequest, dto.ErrorResponse{
+			Error: "リクエストが不正です",
 		})
 	}
 
 	if err := ctrl.slackNotificationUsecase.UpdateEnabled(c.Request().Context(), user.ID, req.IsEnabled); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{
-			"error": "Slack通知設定の更新に失敗しました",
+		return c.JSON(http.StatusInternalServerError, dto.ErrorResponse{
+			Error: "Slack通知設定の更新に失敗しました",
 		})
 	}
 
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"is_enabled": req.IsEnabled,
+	return c.JSON(http.StatusOK, dto.UpdateEnabledResponse{
+		IsEnabled: req.IsEnabled,
 	})
 }
 
 // Delete Slack通知設定を削除
+// @Summary      Slack通知設定を削除
+// @Description  Slack通知設定を削除する
+// @Tags         notifications
+// @Success      204
+// @Failure      500 {object} dto.ErrorResponse
+// @Security     GitHubUserID
+// @Router       /api/notifications/slack [delete]
 func (ctrl *slackNotificationController) Delete(c echo.Context) error {
 	user := c.Get("user").(*models.User)
 
 	if err := ctrl.slackNotificationUsecase.Delete(c.Request().Context(), user.ID); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{
-			"error": "Slack通知設定の削除に失敗しました",
+		return c.JSON(http.StatusInternalServerError, dto.ErrorResponse{
+			Error: "Slack通知設定の削除に失敗しました",
 		})
 	}
 

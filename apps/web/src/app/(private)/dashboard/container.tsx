@@ -3,7 +3,7 @@ import { client } from "@/lib/api/client";
 import type { components } from "@/lib/api/schema";
 import { DashboardPresenter } from "./presenter";
 
-type DashboardData = components["schemas"]["DashboardData"];
+type DashboardData = components["schemas"]["usecase.DashboardData"];
 
 type SearchParams = Promise<{
   period?: string;
