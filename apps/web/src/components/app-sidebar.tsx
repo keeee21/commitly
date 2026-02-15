@@ -4,6 +4,7 @@ import {
   Activity,
   Bell,
   ChevronRight,
+  CircleDot,
   LayoutDashboard,
   LogOut,
   Settings,
@@ -48,6 +49,11 @@ const menuItems = [
     title: "Rivals",
     url: ROUTES.RIVALS,
     icon: Users,
+  },
+  {
+    title: "Circles",
+    url: ROUTES.CIRCLES,
+    icon: CircleDot,
   },
 ];
 

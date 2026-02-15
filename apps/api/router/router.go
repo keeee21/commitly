@@ -16,6 +16,7 @@ func SetupRoutes(e *echo.Echo, db *gorm.DB) {
 	userRepo := repository.NewUserRepository(db)
 	rivalRepo := repository.NewRivalRepository(db)
 	commitStatsRepo := repository.NewCommitStatsRepository(db)
+	circleRepo := repository.NewCircleRepository(db)
 	slackNotificationRepo := repository.NewSlackNotificationSettingRepository(db)
 
 	// Gateways
@@ -26,6 +27,7 @@ func SetupRoutes(e *echo.Echo, db *gorm.DB) {
 	rivalUsecase := usecase.NewRivalUsecase(rivalRepo, githubGateway)
 	dashboardUsecase := usecase.NewDashboardUsecase(commitStatsRepo)
 	activityUsecase := usecase.NewActivityUsecase(commitStatsRepo)
+	circleUsecase := usecase.NewCircleUsecase(circleRepo)
 	slackNotificationUsecase := usecase.NewSlackNotificationUsecase(slackNotificationRepo)
 
 	// Controllers
@@ -35,6 +37,7 @@ func SetupRoutes(e *echo.Echo, db *gorm.DB) {
 	rivalCtrl := controller.NewRivalController(rivalUsecase)
 	dashboardCtrl := controller.NewDashboardController(dashboardUsecase, rivalUsecase)
 	activityCtrl := controller.NewActivityController(activityUsecase, rivalUsecase)
+	circleCtrl := controller.NewCircleController(circleUsecase)
 	slackNotificationCtrl := controller.NewSlackNotificationController(slackNotificationUsecase)
 
 	// Health check
@@ -70,6 +73,14 @@ func SetupRoutes(e *echo.Echo, db *gorm.DB) {
 	activity := protected.Group("/activity")
 	activity.GET("/stream", activityCtrl.GetActivityStream)
 	activity.GET("/rhythm", activityCtrl.GetRhythm)
+
+	// Circle routes
+	circles := protected.Group("/circles")
+	circles.GET("", circleCtrl.GetCircles)
+	circles.POST("", circleCtrl.CreateCircle)
+	circles.POST("/join", circleCtrl.JoinCircle)
+	circles.DELETE("/:id/leave", circleCtrl.LeaveCircle)
+	circles.DELETE("/:id", circleCtrl.DeleteCircle)
 
 	// Slack notification routes
 	slack := protected.Group("/notifications/slack")

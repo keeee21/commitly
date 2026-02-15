@@ -92,6 +92,130 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/dto.MessageResponse"
+  /api/circles:
+    get:
+      security:
+        - GitHubUserID: []
+      description: 自分が所属するサークル一覧を返す
+      tags:
+        - circles
+      summary: サークル一覧を取得
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/dto.CirclesListResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/dto.ErrorResponse"
+    post:
+      security:
+        - GitHubUserID: []
+      description: 新しいサークルを作成する
+      tags:
+        - circles
+      summary: サークルを作成
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/dto.CreateCircleRequest"
+        description: サークル作成リクエスト
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/dto.CircleResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/dto.ErrorResponse"
+  /api/circles/join:
+    post:
+      security:
+        - GitHubUserID: []
+      description: 招待コードを使ってサークルに参加する
+      tags:
+        - circles
+      summary: サークルに参加
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/dto.JoinCircleRequest"
+        description: サークル参加リクエスト
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/dto.CircleResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/dto.ErrorResponse"
+  "/api/circles/{id}":
+    delete:
+      security:
+        - GitHubUserID: []
+      description: 指定IDのサークルを削除する（オーナーのみ）
+      tags:
+        - circles
+      summary: サークルを削除
+      parameters:
+        - description: サークルID
+          name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/dto.ErrorResponse"
+  "/api/circles/{id}/leave":
+    delete:
+      security:
+        - GitHubUserID: []
+      description: 指定IDのサークルから退会する
+      tags:
+        - circles
+      summary: サークルを退会
+      parameters:
+        - description: サークルID
+          name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/dto.ErrorResponse"
   /api/dashboard/monthly:
     get:
       security:
@@ -406,6 +530,73 @@ components:
           type: integer
         github_username:
           type: string
+    dto.CircleMemberResponse:
+      type: object
+      required:
+        - avatar_url
+        - github_username
+        - joined_at
+      properties:
+        avatar_url:
+          type: string
+          example: https://avatars.githubusercontent.com/u/1
+        github_username:
+          type: string
+          example: tanaka
+        joined_at:
+          type: string
+    dto.CircleResponse:
+      type: object
+      required:
+        - created_at
+        - id
+        - invite_code
+        - is_owner
+        - members
+        - name
+      properties:
+        created_at:
+          type: string
+        id:
+          type: integer
+          example: 1
+        invite_code:
+          type: string
+          example: a1b2c3d4
+        is_owner:
+          type: boolean
+          example: true
+        members:
+          type: array
+          items:
+            $ref: "#/components/schemas/dto.CircleMemberResponse"
+        name:
+          type: string
+          example: 勉強会仲間
+    dto.CirclesListResponse:
+      type: object
+      required:
+        - circles
+        - count
+        - max_circles
+      properties:
+        circles:
+          type: array
+          items:
+            $ref: "#/components/schemas/dto.CircleResponse"
+        count:
+          type: integer
+          example: 2
+        max_circles:
+          type: integer
+          example: 3
+    dto.CreateCircleRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
     dto.CreateSlackNotificationRequest:
       type: object
       properties:
@@ -427,6 +618,13 @@ components:
         status:
           type: string
           example: ok
+    dto.JoinCircleRequest:
+      type: object
+      required:
+        - invite_code
+      properties:
+        invite_code:
+          type: string
     dto.MessageResponse:
       type: object
       required:

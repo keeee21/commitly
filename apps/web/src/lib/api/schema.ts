@@ -201,6 +201,242 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/circles": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * サークル一覧を取得
+     * @description 自分が所属するサークル一覧を返す
+     */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["dto.CirclesListResponse"];
+          };
+        };
+        /** @description Internal Server Error */
+        500: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["dto.ErrorResponse"];
+          };
+        };
+      };
+    };
+    put?: never;
+    /**
+     * サークルを作成
+     * @description 新しいサークルを作成する
+     */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      /** @description サークル作成リクエスト */
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["dto.CreateCircleRequest"];
+        };
+      };
+      responses: {
+        /** @description Created */
+        201: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["dto.CircleResponse"];
+          };
+        };
+        /** @description Bad Request */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["dto.ErrorResponse"];
+          };
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/circles/join": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * サークルに参加
+     * @description 招待コードを使ってサークルに参加する
+     */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      /** @description サークル参加リクエスト */
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["dto.JoinCircleRequest"];
+        };
+      };
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["dto.CircleResponse"];
+          };
+        };
+        /** @description Bad Request */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["dto.ErrorResponse"];
+          };
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/circles/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /**
+     * サークルを削除
+     * @description 指定IDのサークルを削除する（オーナーのみ）
+     */
+    delete: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          /** @description サークルID */
+          id: number;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description No Content */
+        204: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Bad Request */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "*/*": components["schemas"]["dto.ErrorResponse"];
+          };
+        };
+      };
+    };
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/circles/{id}/leave": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /**
+     * サークルを退会
+     * @description 指定IDのサークルから退会する
+     */
+    delete: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          /** @description サークルID */
+          id: number;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description No Content */
+        204: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+        /** @description Bad Request */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "*/*": components["schemas"]["dto.ErrorResponse"];
+          };
+        };
+      };
+    };
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/dashboard/monthly": {
     parameters: {
       query?: never;
@@ -716,6 +952,35 @@ export interface components {
       github_user_id: number;
       github_username: string;
     };
+    "dto.CircleMemberResponse": {
+      /** @example https://avatars.githubusercontent.com/u/1 */
+      avatar_url: string;
+      /** @example tanaka */
+      github_username: string;
+      joined_at: string;
+    };
+    "dto.CircleResponse": {
+      created_at: string;
+      /** @example 1 */
+      id: number;
+      /** @example a1b2c3d4 */
+      invite_code: string;
+      /** @example true */
+      is_owner: boolean;
+      members: components["schemas"]["dto.CircleMemberResponse"][];
+      /** @example 勉強会仲間 */
+      name: string;
+    };
+    "dto.CirclesListResponse": {
+      circles: components["schemas"]["dto.CircleResponse"][];
+      /** @example 2 */
+      count: number;
+      /** @example 3 */
+      max_circles: number;
+    };
+    "dto.CreateCircleRequest": {
+      name: string;
+    };
     "dto.CreateSlackNotificationRequest": {
       webhook_url?: string;
     };
@@ -726,6 +991,9 @@ export interface components {
     "dto.HealthResponse": {
       /** @example ok */
       status: string;
+    };
+    "dto.JoinCircleRequest": {
+      invite_code: string;
     };
     "dto.MessageResponse": {
       /** @example 処理が完了しました */

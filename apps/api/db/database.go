@@ -27,5 +27,7 @@ func AutoMigrate(db *gorm.DB) error {
 		&models.LineNotificationSetting{},
 		&models.DiscordNotificationSetting{},
 		&models.NotificationLog{},
+		&models.Circle{},
+		&models.CircleMember{},
 	)
 }

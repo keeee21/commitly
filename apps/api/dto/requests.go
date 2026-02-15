@@ -22,3 +22,13 @@ type CreateSlackNotificationRequest struct {
 type UpdateEnabledRequest struct {
 	IsEnabled bool `json:"is_enabled"`
 }
+
+// CreateCircleRequest サークル作成リクエスト
+type CreateCircleRequest struct {
+	Name string `json:"name" validate:"required"`
+}
+
+// JoinCircleRequest サークル参加リクエスト
+type JoinCircleRequest struct {
+	InviteCode string `json:"invite_code" validate:"required"`
+}

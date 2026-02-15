@@ -94,3 +94,27 @@ type RhythmResponse struct {
 	Users  []UserRhythm `json:"users" validate:"required"`
 	Period string       `json:"period" validate:"required" example:"2026-02-09/2026-02-15"`
 }
+
+// CircleMemberResponse サークルメンバーレスポンス
+type CircleMemberResponse struct {
+	GithubUsername string    `json:"github_username" validate:"required" example:"tanaka"`
+	AvatarURL      string    `json:"avatar_url" validate:"required" example:"https://avatars.githubusercontent.com/u/1"`
+	JoinedAt       time.Time `json:"joined_at" validate:"required"`
+}
+
+// CircleResponse サークルレスポンス
+type CircleResponse struct {
+	ID         uint64                 `json:"id" validate:"required" example:"1"`
+	Name       string                 `json:"name" validate:"required" example:"勉強会仲間"`
+	InviteCode string                 `json:"invite_code" validate:"required" example:"a1b2c3d4"`
+	IsOwner    bool                   `json:"is_owner" validate:"required" example:"true"`
+	Members    []CircleMemberResponse `json:"members" validate:"required"`
+	CreatedAt  time.Time              `json:"created_at" validate:"required"`
+}
+
+// CirclesListResponse サークル一覧レスポンス
+type CirclesListResponse struct {
+	Circles    []CircleResponse `json:"circles" validate:"required"`
+	Count      int              `json:"count" validate:"required" example:"2"`
+	MaxCircles int              `json:"max_circles" validate:"required" example:"3"`
+}
