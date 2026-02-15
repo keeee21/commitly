@@ -118,3 +118,24 @@ type CirclesListResponse struct {
 	Count      int              `json:"count" validate:"required" example:"2"`
 	MaxCircles int              `json:"max_circles" validate:"required" example:"3"`
 }
+
+// SignalUserResponse シグナル関連ユーザーレスポンス
+type SignalUserResponse struct {
+	GithubUsername string `json:"github_username" validate:"required" example:"tanaka"`
+	AvatarURL      string `json:"avatar_url" validate:"required" example:"https://avatars.githubusercontent.com/u/1"`
+}
+
+// SignalResponse シグナルレスポンス
+type SignalResponse struct {
+	Type       string               `json:"type" validate:"required" example:"same_day"`
+	Date       string               `json:"date" validate:"required" example:"2026-02-14"`
+	Users      []SignalUserResponse `json:"users" validate:"required"`
+	Detail     string               `json:"detail" validate:"required" example:"同じ日にコミット"`
+	CircleID   uint64               `json:"circle_id,omitempty" example:"1"`
+	CircleName string               `json:"circle_name,omitempty" example:"勉強会仲間"`
+}
+
+// SignalsListResponse シグナル一覧レスポンス
+type SignalsListResponse struct {
+	Signals []SignalResponse `json:"signals" validate:"required"`
+}

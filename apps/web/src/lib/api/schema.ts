@@ -437,6 +437,66 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/circles/{id}/signals": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * サークルの並走シグナルを取得
+     * @description 指定サークルのメンバー間の並走シグナルを返す
+     */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          /** @description サークルID */
+          id: number;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["dto.SignalsListResponse"];
+          };
+        };
+        /** @description Bad Request */
+        400: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["dto.ErrorResponse"];
+          };
+        };
+        /** @description Internal Server Error */
+        500: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["dto.ErrorResponse"];
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/api/dashboard/monthly": {
     parameters: {
       query?: never;
@@ -885,6 +945,54 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/api/signals/recent": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * 最近の並走シグナルを取得
+     * @description 全サークル横断で直近の並走シグナルを返す
+     */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description OK */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["dto.SignalsListResponse"];
+          };
+        };
+        /** @description Internal Server Error */
+        500: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["dto.ErrorResponse"];
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/health": {
     parameters: {
       query?: never;
@@ -1021,6 +1129,28 @@ export interface components {
       /** @example 5 */
       max_rivals: number;
       rivals: components["schemas"]["dto.RivalResponse"][];
+    };
+    "dto.SignalResponse": {
+      /** @example 1 */
+      circle_id?: number;
+      /** @example 勉強会仲間 */
+      circle_name?: string;
+      /** @example 2026-02-14 */
+      date: string;
+      /** @example 同じ日にコミット */
+      detail: string;
+      /** @example same_day */
+      type: string;
+      users: components["schemas"]["dto.SignalUserResponse"][];
+    };
+    "dto.SignalUserResponse": {
+      /** @example https://avatars.githubusercontent.com/u/1 */
+      avatar_url: string;
+      /** @example tanaka */
+      github_username: string;
+    };
+    "dto.SignalsListResponse": {
+      signals: components["schemas"]["dto.SignalResponse"][];
     };
     "dto.SlackNotificationSettingResponse": {
       created_at: string;

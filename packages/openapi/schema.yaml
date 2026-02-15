@@ -216,6 +216,40 @@ paths:
             "*/*":
               schema:
                 $ref: "#/components/schemas/dto.ErrorResponse"
+  "/api/circles/{id}/signals":
+    get:
+      security:
+        - GitHubUserID: []
+      description: 指定サークルのメンバー間の並走シグナルを返す
+      tags:
+        - signals
+      summary: サークルの並走シグナルを取得
+      parameters:
+        - description: サークルID
+          name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/dto.SignalsListResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/dto.ErrorResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/dto.ErrorResponse"
   /api/dashboard/monthly:
     get:
       security:
@@ -454,6 +488,27 @@ paths:
             "*/*":
               schema:
                 $ref: "#/components/schemas/dto.ErrorResponse"
+  /api/signals/recent:
+    get:
+      security:
+        - GitHubUserID: []
+      description: 全サークル横断で直近の並走シグナルを返す
+      tags:
+        - signals
+      summary: 最近の並走シグナルを取得
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/dto.SignalsListResponse"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/dto.ErrorResponse"
   /health:
     get:
       description: サーバーの稼働状態を確認する
@@ -686,6 +741,54 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/dto.RivalResponse"
+    dto.SignalResponse:
+      type: object
+      required:
+        - date
+        - detail
+        - type
+        - users
+      properties:
+        circle_id:
+          type: integer
+          example: 1
+        circle_name:
+          type: string
+          example: 勉強会仲間
+        date:
+          type: string
+          example: 2026-02-14
+        detail:
+          type: string
+          example: 同じ日にコミット
+        type:
+          type: string
+          example: same_day
+        users:
+          type: array
+          items:
+            $ref: "#/components/schemas/dto.SignalUserResponse"
+    dto.SignalUserResponse:
+      type: object
+      required:
+        - avatar_url
+        - github_username
+      properties:
+        avatar_url:
+          type: string
+          example: https://avatars.githubusercontent.com/u/1
+        github_username:
+          type: string
+          example: tanaka
+    dto.SignalsListResponse:
+      type: object
+      required:
+        - signals
+      properties:
+        signals:
+          type: array
+          items:
+            $ref: "#/components/schemas/dto.SignalResponse"
     dto.SlackNotificationSettingResponse:
       type: object
       required:

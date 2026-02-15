@@ -11,16 +11,22 @@ function formatMonth(dateStr: string): string {
 
 type DashboardData = components["schemas"]["usecase.DashboardData"];
 
+type SignalResponse = components["schemas"]["dto.SignalResponse"];
+
 type DashboardPresenterProps = {
   period: "weekly" | "monthly";
   dashboardData: DashboardData | null;
   initialError: string | null;
+  signals: SignalResponse[];
+  hasCircles: boolean;
 };
 
 export function DashboardPresenter({
   period,
   dashboardData,
   initialError,
+  signals,
+  hasCircles,
 }: DashboardPresenterProps) {
   return (
     <div className="p-6 space-y-6">
@@ -189,6 +195,74 @@ export function DashboardPresenter({
                   </tbody>
                 </table>
               </div>
+            </div>
+          )}
+
+          {/* サークルシグナル or 招待バナー */}
+          {hasCircles ? (
+            <div className="space-y-4">
+              <h2 className="text-lg font-semibold">Circle Signals</h2>
+              {signals.length > 0 ? (
+                <div className="grid gap-3">
+                  {signals.map((signal, index) => (
+                    <div
+                      key={`${signal.type}-${signal.date}-${index}`}
+                      className="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 p-4 flex items-start gap-3"
+                    >
+                      <span className="text-2xl">
+                        {signal.type === "same_day"
+                          ? "🤝"
+                          : signal.type === "same_hour"
+                            ? "⏰"
+                            : "💻"}
+                      </span>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium">
+                          {signal.users
+                            .map((u) => u.github_username)
+                            .join("、")}
+                          さんと
+                          {signal.type === "same_day"
+                            ? "同じ日にコミット"
+                            : signal.type === "same_hour"
+                              ? `${signal.detail}にコミット`
+                              : `${signal.detail}を使用`}
+                        </p>
+                        <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+                          {signal.circle_name} · {signal.date}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                  <Link
+                    href="/circles"
+                    className="text-sm text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"
+                  >
+                    サークルを見る →
+                  </Link>
+                </div>
+              ) : (
+                <div className="bg-zinc-50 dark:bg-zinc-800 rounded-lg p-6 text-center">
+                  <p className="text-zinc-500 dark:text-zinc-400">
+                    まだ並走シグナルはありません。メンバーがコミットすると検出されます。
+                  </p>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-lg border border-indigo-200 dark:border-indigo-800 p-6 text-center">
+              <p className="text-lg font-semibold mb-2">
+                サークルに参加して、仲間との並走シグナルを受け取ろう
+              </p>
+              <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-4">
+                同じ日・同じ時間帯・同じ言語でコミットすると、偶然の一致がシグナルとして届きます
+              </p>
+              <Link
+                href="/circles"
+                className="inline-block px-4 py-2 bg-zinc-900 text-white dark:bg-zinc-50 dark:text-zinc-900 rounded-md text-sm font-medium hover:opacity-80 transition-opacity"
+              >
+                サークルを作成する
+              </Link>
             </div>
           )}
         </div>

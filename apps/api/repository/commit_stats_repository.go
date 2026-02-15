@@ -55,7 +55,7 @@ func (r *commitStatsRepository) FindByGithubUserIDsAndDateRange(ctx context.Cont
 func (r *commitStatsRepository) Upsert(ctx context.Context, stats *models.CommitStats) error {
 	return r.db.WithContext(ctx).Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "github_user_id"}, {Name: "date"}, {Name: "repository"}},
-		DoUpdates: clause.AssignmentColumns([]string{"commit_count", "fetched_at"}),
+		DoUpdates: clause.AssignmentColumns([]string{"commit_count", "primary_hour", "language", "fetched_at"}),
 	}).Create(stats).Error
 }
 
@@ -65,6 +65,6 @@ func (r *commitStatsRepository) UpsertBatch(ctx context.Context, statsList []mod
 	}
 	return r.db.WithContext(ctx).Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "github_user_id"}, {Name: "date"}, {Name: "repository"}},
-		DoUpdates: clause.AssignmentColumns([]string{"commit_count", "fetched_at"}),
+		DoUpdates: clause.AssignmentColumns([]string{"commit_count", "primary_hour", "language", "fetched_at"}),
 	}).Create(&statsList).Error
 }

@@ -117,9 +117,17 @@ func (u *syncCommitsUsecase) SyncUser(ctx context.Context, githubUserID uint64, 
 
 	log.Printf("Found %d public repos for user: %s", len(repos), githubUsername)
 
-	// リポジトリ別・日別のコミット数を集計
-	// map[date][repo] = count
-	commitsByDateAndRepo := make(map[string]map[string]int)
+	// リポジトリ別・日別のコミット数と時間帯を集計
+	type repoDateKey struct {
+		date     string
+		repo     string
+		language string
+	}
+	type commitInfo struct {
+		count      int
+		hourCounts map[int]int
+	}
+	commitsByKey := make(map[repoDateKey]*commitInfo)
 
 	for _, repo := range repos {
 		commits, err := u.githubGateway.GetRepositoryCommits(ctx, repo.Owner.Login, repo.Name, githubUsername, from, to)
@@ -135,30 +143,36 @@ func (u *syncCommitsUsecase) SyncUser(ctx context.Context, githubUserID uint64, 
 		repoFullName := repo.FullName
 		for _, commit := range commits {
 			dateStr := commit.Commit.Author.Date.Format("2006-01-02")
-			if commitsByDateAndRepo[dateStr] == nil {
-				commitsByDateAndRepo[dateStr] = make(map[string]int)
+			key := repoDateKey{date: dateStr, repo: repoFullName, language: repo.Language}
+			info, exists := commitsByKey[key]
+			if !exists {
+				info = &commitInfo{hourCounts: make(map[int]int)}
+				commitsByKey[key] = info
 			}
-			commitsByDateAndRepo[dateStr][repoFullName]++
+			info.count++
+			hour := commit.Commit.Author.Date.Hour()
+			info.hourCounts[hour]++
 		}
 	}
 
 	// コミット統計を保存
 	var statsList []models.CommitStats
-	for dateStr, repos := range commitsByDateAndRepo {
-		date, err := time.Parse("2006-01-02", dateStr)
+	for key, info := range commitsByKey {
+		date, err := time.Parse("2006-01-02", key.date)
 		if err != nil {
 			continue
 		}
 
-		for repo, count := range repos {
-			statsList = append(statsList, models.CommitStats{
-				GithubUserID:   githubUserID,
-				GithubUsername: githubUsername,
-				Date:           date,
-				Repository:     repo,
-				CommitCount:    count,
-			})
-		}
+		primaryHour := mostFrequentHour(info.hourCounts)
+		statsList = append(statsList, models.CommitStats{
+			GithubUserID:   githubUserID,
+			GithubUsername: githubUsername,
+			Date:           date,
+			Repository:     key.repo,
+			CommitCount:    info.count,
+			PrimaryHour:    &primaryHour,
+			Language:       key.language,
+		})
 	}
 
 	if len(statsList) > 0 {
@@ -174,4 +188,16 @@ func (u *syncCommitsUsecase) SyncUser(ctx context.Context, githubUserID uint64, 
 	}
 
 	return nil
+}
+
+func mostFrequentHour(hourCounts map[int]int) int {
+	maxCount := 0
+	maxHour := 0
+	for hour, count := range hourCounts {
+		if count > maxCount {
+			maxCount = count
+			maxHour = hour
+		}
+	}
+	return maxHour
 }

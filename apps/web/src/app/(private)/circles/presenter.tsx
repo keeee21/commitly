@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useActionState, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -202,7 +203,12 @@ export function CirclesPresenter({
               >
                 <div className="flex items-start justify-between mb-4">
                   <div>
-                    <h3 className="text-lg font-semibold">{circle.name}</h3>
+                    <Link
+                      href={`/circles/${circle.id}`}
+                      className="text-lg font-semibold hover:underline"
+                    >
+                      {circle.name}
+                    </Link>
                     <div className="flex items-center gap-2 mt-1">
                       <span className="text-sm text-zinc-500 dark:text-zinc-400">
                         招待コード:

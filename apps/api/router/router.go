@@ -28,6 +28,7 @@ func SetupRoutes(e *echo.Echo, db *gorm.DB) {
 	dashboardUsecase := usecase.NewDashboardUsecase(commitStatsRepo)
 	activityUsecase := usecase.NewActivityUsecase(commitStatsRepo)
 	circleUsecase := usecase.NewCircleUsecase(circleRepo)
+	signalUsecase := usecase.NewSignalUsecase(circleRepo, commitStatsRepo)
 	slackNotificationUsecase := usecase.NewSlackNotificationUsecase(slackNotificationRepo)
 
 	// Controllers
@@ -38,6 +39,7 @@ func SetupRoutes(e *echo.Echo, db *gorm.DB) {
 	dashboardCtrl := controller.NewDashboardController(dashboardUsecase, rivalUsecase)
 	activityCtrl := controller.NewActivityController(activityUsecase, rivalUsecase)
 	circleCtrl := controller.NewCircleController(circleUsecase)
+	signalCtrl := controller.NewSignalController(signalUsecase)
 	slackNotificationCtrl := controller.NewSlackNotificationController(slackNotificationUsecase)
 
 	// Health check
@@ -79,8 +81,12 @@ func SetupRoutes(e *echo.Echo, db *gorm.DB) {
 	circles.GET("", circleCtrl.GetCircles)
 	circles.POST("", circleCtrl.CreateCircle)
 	circles.POST("/join", circleCtrl.JoinCircle)
+	circles.GET("/:id/signals", signalCtrl.GetSignals)
 	circles.DELETE("/:id/leave", circleCtrl.LeaveCircle)
 	circles.DELETE("/:id", circleCtrl.DeleteCircle)
+
+	// Signal routes
+	protected.GET("/signals/recent", signalCtrl.GetRecentSignals)
 
 	// Slack notification routes
 	slack := protected.Group("/notifications/slack")

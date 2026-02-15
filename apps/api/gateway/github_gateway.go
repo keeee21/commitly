@@ -34,7 +34,8 @@ type GithubRepo struct {
 	Owner    struct {
 		Login string `json:"login"`
 	} `json:"owner"`
-	Private bool `json:"private"`
+	Private  bool   `json:"private"`
+	Language string `json:"language"`
 }
 
 // GithubEvent GitHubイベント情報

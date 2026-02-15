@@ -1,6 +1,15 @@
 "use client";
 
-import { Bell, GitCommit, Github, TrendingUp, Users } from "lucide-react";
+import {
+  Activity,
+  Bell,
+  CircleDot,
+  GitCommit,
+  Github,
+  Sparkles,
+  TrendingUp,
+  Users,
+} from "lucide-react";
 import { signInWithGitHub } from "@/lib/auth";
 
 export function LandingPresenter() {
@@ -12,12 +21,11 @@ export function LandingPresenter() {
           <h1 className="text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 sm:text-5xl md:text-6xl">
             <span className="block">Commitly</span>
             <span className="mt-2 block text-2xl font-medium text-zinc-600 dark:text-zinc-400 sm:text-3xl">
-              Track your commits, compete with friends
+              Track your commits, compete with rivals, run alongside friends
             </span>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg text-zinc-600 dark:text-zinc-400">
-            GitHubのコミット活動を可視化し、仲間と競い合いながらモチベーションを高めましょう。
-            毎日のコミット数を追跡し、ライバルとの比較で成長を実感できます。
+            GitHubのコミット活動を可視化し、ライバルと競い合い、サークルの仲間と並走しながらモチベーションを高めましょう。
           </p>
           <div className="mt-10">
             <form action={signInWithGitHub}>
@@ -37,7 +45,7 @@ export function LandingPresenter() {
           <h2 className="text-center text-2xl font-bold text-zinc-900 dark:text-zinc-50 sm:text-3xl">
             Features
           </h2>
-          <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             <FeatureCard
               icon={<GitCommit className="h-8 w-8" />}
               title="コミット追跡"
@@ -46,18 +54,38 @@ export function LandingPresenter() {
             <FeatureCard
               icon={<Users className="h-8 w-8" />}
               title="ライバル機能"
-              description="友達やチームメンバーをライバルとして追加。お互いのコミット数を比較できます。"
+              description="友達やチームメンバーをライバルとして追加。コミット数を比較して競い合えます。"
             />
             <FeatureCard
               icon={<TrendingUp className="h-8 w-8" />}
               title="ダッシュボード"
-              description="コミット数の推移やライバルとの比較をグラフで可視化。成長を実感できます。"
+              description="週次・月次のコミット推移やライバルとの比較を可視化。成長を実感できます。"
             />
             <FeatureCard
-              icon={<Bell className="h-8 w-8" />}
-              title="通知機能"
-              description="LINEでコミット状況を通知。モチベーション維持をサポートします。"
+              icon={<Activity className="h-8 w-8" />}
+              title="アクティビティ & リズム"
+              description="自分とライバルのコミット履歴をタイムラインで表示。曜日別のリズムも可視化します。"
             />
+            <FeatureCard
+              icon={<CircleDot className="h-8 w-8" />}
+              title="サークル"
+              description="仲間とサークルを作成して招待コードで参加。少人数グループでつながれます。"
+            />
+            <FeatureCard
+              icon={<Sparkles className="h-8 w-8" />}
+              title="並走シグナル"
+              description="サークルメンバーと同じ日・同じ時間帯・同じ言語でコミットすると、偶然の一致がシグナルとして届きます。"
+            />
+          </div>
+        </div>
+
+        {/* Notification mention */}
+        <div className="mt-16 text-center">
+          <div className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 shadow-md dark:bg-zinc-800">
+            <Bell className="h-5 w-5 text-zinc-600 dark:text-zinc-400" />
+            <span className="text-sm text-zinc-600 dark:text-zinc-400">
+              Slack・LINE・Discordへの通知連携にも対応
+            </span>
           </div>
         </div>
 
@@ -88,7 +116,7 @@ export function LandingPresenter() {
       {/* Footer */}
       <footer className="mt-16 border-t border-zinc-200 py-8 dark:border-zinc-800">
         <div className="mx-auto max-w-6xl px-4 text-center text-sm text-zinc-500 dark:text-zinc-400">
-          <p>&copy; 2025 Commitly. All rights reserved.</p>
+          <p>&copy; 2026 Commitly. All rights reserved.</p>
         </div>
       </footer>
     </div>
